@@ -1,3 +1,7 @@
+/**
+ * @author Lucía Garrido Chocarro
+ * @author Ángel Galea Anisa
+ */
 package com.mazmorras;
 
 import javafx.application.Application;
@@ -9,7 +13,8 @@ import java.io.IOException;
 /**
  * La clase <code>App</code> es la aplicación principal que extiende la clase <code>Application</code> de JavaFX.
  * Esta clase es responsable de iniciar la aplicación, configurar la ventana principal (Stage), 
- * establecer el icono de la ventana, y gestionar las escenas mediante el <code>SceneManager</code>.
+ * establecer el icono de la ventana, y ges
+ * çtionar las escenas mediante el <code>SceneManager</code>.
  */
 public class App extends Application {
 

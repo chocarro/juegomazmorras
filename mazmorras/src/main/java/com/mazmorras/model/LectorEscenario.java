@@ -16,10 +16,10 @@ public class LectorEscenario {
     public LectorEscenario() {
     }
 
-    public String[][] leerCSV(File ficheroEntrada) throws IOException {
+    public String[][] leerCSV() throws IOException {
         LinkedList<String[]> filas = new LinkedList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(ficheroEntrada))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("mazmorras/src/main/resources/mazmorras/data/escenario.csv"))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.trim().split(",");
