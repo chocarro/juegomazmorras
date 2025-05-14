@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox fx:id="vbox" alignment="CENTER" spacing="20" style="-fx-background-color: #2b2b2b; -fx-padding: 30;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mazmorras.controllers.mainController">
+
+    <!-- Título principal con fuente simplificada -->
+    <Text fx:id="text" fill="WHITE" text="Crear Personaje">
+        <font>
+            <Font name="Arial" size="20" />
+        </font>
+        <style>-fx-font-weight: bold;</style>
+    </Text>
+
+    <!-- Formulario de creación -->
+    <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" vgap="10">
+        <Label fx:id="labelnombre" text="Nombre:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="campoNombre" promptText="Ingrese nombre" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label fx:id="labelsalud" text="Salud inicial:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="campoSalud" promptText="50-100" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label fx:id="labelataque" text="Ataque:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="campoAtaque" promptText="5-20" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label fx:id="labeldefensa" text="Defensa:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <TextField fx:id="campoDefensa" promptText="1-10" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+        <Label fx:id="labelvelocidad" text="Velocidad:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <TextField fx:id="campoVelocidad" promptText="1-10" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        
+        <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
+    </GridPane>
+
+    <Button fx:id="comenzarAventuraBtn" minWidth="200" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;" text="Comenzar Aventura" />
+</VBox>
