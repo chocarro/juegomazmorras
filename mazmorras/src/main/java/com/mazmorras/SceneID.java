@@ -1,5 +1,5 @@
 package com.mazmorras;
 
 public enum SceneID {
-    MAIN, JUEGO
+    MAIN, JUEGO, PRIMERA, PROTA
 }

@@ -5,7 +5,6 @@
 package com.mazmorras;
 
 import javafx.application.Application;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -41,9 +40,8 @@ public class App extends Application {
         sm.init(stage, "style");
         
         // Configura las escenas con identificadores
-        sm.setScene(SceneID.MAIN, "main");
-        
-        
+        sm.setScene(SceneID.MAIN, "main");    
+       // sm.setScene(SceneID.JUEGO, "juego");    
         // Carga la escena principal
         sm.loadScene(SceneID.MAIN);
     }

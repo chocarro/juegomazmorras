@@ -15,11 +15,20 @@ public class Proveedor {
         return instance;
     }
 
-    public GestorJuego getGGestorJuego(){
+    public GestorJuego getGestorJuego(){
         return this.gestorJuego;
     }
 
     public void setGestorJuego(GestorJuego gestorJuego){
         this.gestorJuego = gestorJuego;
+    }
+    
+    private static CoordinadorVistas coordinadorVistas;
+
+   public CoordinadorVistas getCoordinadorVistas() {
+        if (coordinadorVistas == null) {
+            coordinadorVistas = new CoordinadorVistas();
+        }
+        return coordinadorVistas;
     }
 }

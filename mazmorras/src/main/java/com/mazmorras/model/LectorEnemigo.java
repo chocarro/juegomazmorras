@@ -12,6 +12,7 @@ private HashMap<String,String> imagenes;
 
 public LectorEnemigo(){
     this.oponente=new ArrayList<>();
+    this.imagenes = new HashMap<>();
     this.imagenes.put("goblin","/mazmorras/images/goblin.png");
     this.imagenes.put("calavera","/mazmorras/images/calavera.png");
 

@@ -1,7 +1,6 @@
 package com.mazmorras.model;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -16,17 +15,18 @@ public class LectorEscenario {
     public LectorEscenario() {
     }
 
-    public String[][] leerCSV() throws IOException {
+    public String[][] leerCSV(String nombremap) throws IOException {
         LinkedList<String[]> filas = new LinkedList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("mazmorras/src/main/resources/mazmorras/data/escenario.csv"))) {
+        try (BufferedReader br = new BufferedReader(
+                new FileReader("mazmorras/src/main/resources/mazmorras/data/escenario.csv"))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.trim().split(",");
                 filas.add(datos);
             }
         }
-        
+
         numFilas = filas.size();
         numColumnas = filas.get(0).length;
         this.escenario = new String[numFilas][numColumnas];
