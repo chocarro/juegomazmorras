@@ -43,4 +43,46 @@ public class LectorEscenario {
 
         return escenario;
     }
+
+
+    public String[][] getEscenario() {
+        return this.escenario;
+    }
+
+    public void setEscenario(String[][] escenario) {
+        this.escenario = escenario;
+    }
+
+    public int getNumFilas() {
+        return this.numFilas;
+    }
+
+    public void setNumFilas(int numFilas) {
+        this.numFilas = numFilas;
+    }
+
+    public int getNumColumnas() {
+        return this.numColumnas;
+    }
+
+    public void setNumColumnas(int numColumnas) {
+        this.numColumnas = numColumnas;
+    }
+
+    public int getPosXZ() {
+        return this.posXZ;
+    }
+
+    public void setPosXZ(int posXZ) {
+        this.posXZ = posXZ;
+    }
+
+    public int getPosYZ() {
+        return this.posYZ;
+    }
+
+    public void setPosYZ(int posYZ) {
+        this.posYZ = posYZ;
+    }
+
 }

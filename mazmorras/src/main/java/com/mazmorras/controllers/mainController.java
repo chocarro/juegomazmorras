@@ -3,6 +3,7 @@ package com.mazmorras.controllers;
 import com.mazmorras.SceneID;
 import com.mazmorras.SceneManager;
 import com.mazmorras.model.Protagonista;
+import com.mazmorras.model.Proveedor;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -56,6 +57,9 @@ public class mainController {
   Button comenzarAventuraBtn;
 
   @FXML
+  private Label mensajeError;
+
+  @FXML
   public void initialize() {
     // Configurar valores por defecto
     campoSalud.setText("100");
@@ -64,44 +68,76 @@ public class mainController {
     campoVelocidad.setText("5");
 
     comenzarAventuraBtn.setOnAction(event -> {
-      crearPersonaje();
-      SceneManager sm = SceneManager.getInstance();
-   // Configura las escenas con identificadores
-        sm.setScene(SceneID.JUEGO, "juego");        
-        // Carga la escena principal
-        sm.loadScene(SceneID.JUEGO);
-
+      if (validarCampos()) {
+        crearPersonaje();
+        cargarEscenaJuego();
+      }
     });
-    
-    
+
   }
 
-  private void crearPersonaje() {
+  private boolean validarCampos() {
+    // Validación básica del nombre
+    if (campoNombre.getText().trim().isEmpty()) {
+      mostrarError("¡Debes ingresar un nombre!");
+      return false;
+    }
+
+    // Validación de valores numéricos
     try {
-      String nombre = campoNombre.getText();
       int salud = Integer.parseInt(campoSalud.getText());
       int ataque = Integer.parseInt(campoAtaque.getText());
       int defensa = Integer.parseInt(campoDefensa.getText());
       int velocidad = Integer.parseInt(campoVelocidad.getText());
 
-      Protagonista prota = new Protagonista( nombre,  "/mazmorras/images/personaje.png",  99,  salud,  ataque,  defensa,  velocidad,
-             20,  100);
+      if (salud <= 0 || ataque <= 0 || defensa <= 0 || velocidad <= 0) {
+        mostrarError("¡Los valores deben ser mayores a 0!");
+        return false;
+      }
 
-      // Aquí puedes guardar estos datos o crear un objeto "Personaje"
-      System.out.println("Nombre: " + nombre);
-      System.out.println("Salud: " + salud);
-      System.out.println("Ataque: " + ataque);
-      System.out.println("Defensa: " + defensa);
-      System.out.println("Velocidad: " + velocidad);
-
-      // Cambiar a la siguiente escena del juego
- 
-
-    } catch (NumberFormatException ex) {
-      System.err.println("Error al convertir los valores numéricos. Verifica los campos.");
+    } catch (NumberFormatException e) {
+      mostrarError("¡Valores numéricos inválidos!");
+      return false;
     }
+
+    mensajeError.setVisible(false);
+    return true;
   }
 
+  private void mostrarError(String mensaje) {
+    mensajeError.setText(mensaje);
+    mensajeError.setVisible(true);
+  }
 
+  private void crearPersonaje() {
+    String nombre = campoNombre.getText().trim();
+    int salud = Integer.parseInt(campoSalud.getText());
+    int ataque = Integer.parseInt(campoAtaque.getText());
+    int defensa = Integer.parseInt(campoDefensa.getText());
+    int velocidad = Integer.parseInt(campoVelocidad.getText());
+
+    // Crear protagonista con valores básicos
+Protagonista prota = new Protagonista(
+    nombre,                                   // Nombre del protagonista
+    "/mazmorras/images/personaje.png",        // Ruta de imagen fija
+    1,                                        // ID
+    salud,                                    // Salud actual
+    ataque,                                   // Ataque
+    defensa,                                  // Defensa
+    velocidad,                                // Velocidad
+    10,                                       // Porcentaje crítico (valor ejemplo)
+    salud                                     // Salud máxima (puedes ajustarlo si varía)
+);
+
+
+    // Guardar en el gestor del juego
+    Proveedor.getInstance().getGestorJuego().setProtagonista(prota);
+  }
+
+  private void cargarEscenaJuego() {
+    SceneManager sm = SceneManager.getInstance();
+    sm.setScene(SceneID.JUEGO, "juego");
+    sm.loadScene(SceneID.JUEGO);
+  }
 
 }

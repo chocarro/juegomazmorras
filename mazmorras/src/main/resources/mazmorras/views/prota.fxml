@@ -5,22 +5,30 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="gridpane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mazmorras.controllers.protaController">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-  </rowConstraints>
-   <children>
-      <Label fx:id="labelnombre" text="Nombre:" />
-      <Label fx:id="nombre" GridPane.columnIndex="1" />
-      <Label fx:id="labelsalud" text="Salud:" GridPane.rowIndex="1" />
-      <Label fx:id="salud" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label fx:id="labeldanio" text="Daño:" GridPane.rowIndex="2" />
-      <Label fx:id="danio" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-   </children>
-</GridPane>
+
+<AnchorPane fx:id="anchorPaneProta" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mazmorras.controllers.protaController">
+    <GridPane fx:id="gridPaneProta">
+        <ImageView fx:id="imageProta" fitHeight="128" fitWidth="128" GridPane.columnIndex="0" GridPane.rowSpan="7"/>
+        
+        <Label fx:id="labelnombre" text="Nombre:" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label fx:id="nombre" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        
+        <Label fx:id="labelsalud" text="Salud:" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label fx:id="salud" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        
+        <Label fx:id="labeldanio" text="Ataque:" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label fx:id="danio" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        
+        <Label fx:id="labeldefensa" text="Defensa:" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label fx:id="defensa" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+        
+        <Label fx:id="labelvelocidad" text="Velocidad:" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label fx:id="velocidad" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
+        
+        <Label fx:id="labelcritico" text="Crítico:" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+        <Label fx:id="critico" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+        
+        <Label fx:id="labelposicion" text="Posición:" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <Label fx:id="posicion" GridPane.columnIndex="2" GridPane.rowIndex="6"/>
+    </GridPane>
+</AnchorPane>

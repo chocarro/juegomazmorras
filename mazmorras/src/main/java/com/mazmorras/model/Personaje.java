@@ -1,6 +1,6 @@
 package com.mazmorras.model;
 
-public class Personaje {
+public class Personaje  implements Comparable{
     protected static String imagen;
     protected int id;
     protected int salud;
@@ -145,6 +145,14 @@ public class Personaje {
         return "bloqueado";
     }
 
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof Personaje)) {
+            throw new IllegalArgumentException("Objeto no es de tipo Personaje");
+        }
+        Personaje otro = (Personaje) o;
+        return Integer.compare(otro.velocidad, this.velocidad);
+    }
 
 
     @Override

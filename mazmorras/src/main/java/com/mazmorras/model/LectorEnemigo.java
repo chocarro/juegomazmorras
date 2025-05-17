@@ -42,5 +42,21 @@ public ArrayList<Personaje> leerCSV() throws Exception {
         return this.oponente;
     }
 
+    public ArrayList<Personaje> getOponente() {
+        return this.oponente;
+    }
+
+    public void setOponente(ArrayList<Personaje> oponente) {
+        this.oponente = oponente;
+    }
+
+    public HashMap<String,String> getImagenes() {
+        return this.imagenes;
+    }
+
+    public void setImagenes(HashMap<String,String> imagenes) {
+        this.imagenes = imagenes;
+    }
+
 
 }

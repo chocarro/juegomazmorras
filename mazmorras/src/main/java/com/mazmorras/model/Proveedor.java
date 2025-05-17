@@ -23,12 +23,5 @@ public class Proveedor {
         this.gestorJuego = gestorJuego;
     }
     
-    private static CoordinadorVistas coordinadorVistas;
-
-   public CoordinadorVistas getCoordinadorVistas() {
-        if (coordinadorVistas == null) {
-            coordinadorVistas = new CoordinadorVistas();
-        }
-        return coordinadorVistas;
-    }
+ 
 }

@@ -1,13 +1,16 @@
 package com.mazmorras.model;
 
 import java.util.Random;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Protagonista extends Personaje {
 
-    private String nombre = "/mazmorras/images/personaje.png";
+    private String imagen = "/mazmorras/images/personaje.png";
     private int getSaludMaxima = 100;
     private int porcentajeCritico;
     private int id;
+
 
     public Protagonista(String nombre, String imagen, int id, int salud, int ataque, int defensa, int velocidad,
             int porcentajeCritico, int getSaludMaxima) {
@@ -17,6 +20,14 @@ public class Protagonista extends Personaje {
 
     public int getId() {
         return this.id;
+    }
+
+    public String getImagen() {
+        return this.imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public void setId(int id) {
@@ -40,11 +51,11 @@ public class Protagonista extends Personaje {
     }
 
     public String getNombre() {
-        return this.nombre;
+        return this.imagen;
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.imagen = nombre;
     }
 
     @Override
@@ -123,5 +134,14 @@ public class Protagonista extends Personaje {
         return "{" + super.toString() +
                 "}";
     }
+
+
+public void forEach(Consumer<Protagonista> action) {
+    action.accept(this);
+}
+
+
+
+
 
 }

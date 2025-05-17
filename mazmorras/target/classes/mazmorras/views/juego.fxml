@@ -13,10 +13,13 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mazmorras.controllers.juegoController">
+<AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/23.0.1"
+   xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mazmorras.controllers.juegoController">
    <children>
       <Pane prefHeight="610.0" prefWidth="820.0" />
-      <GridPane fx:id="gridPane" alignment="CENTER" prefHeight="400.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane fx:id="gridPane" alignment="CENTER" prefHeight="400.0" prefWidth="400.0"
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+         AnchorPane.topAnchor="0.0">
          <columnConstraints>
             <ColumnConstraints />
          </columnConstraints>
@@ -25,7 +28,9 @@
          </rowConstraints>
       </GridPane>
 
-            <GridPane fx:id="gridPane2" alignment="CENTER" prefHeight="400.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane fx:id="gridPane2" alignment="CENTER" prefHeight="400.0" prefWidth="400.0"
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+         AnchorPane.topAnchor="0.0">
          <columnConstraints>
             <ColumnConstraints />
          </columnConstraints>
@@ -33,6 +38,9 @@
             <RowConstraints />
          </rowConstraints>
       </GridPane>
-
+      <VBox fx:id="endGamePanel" visible="false">
+         <Label fx:id="lblResultado" style="-fx-font-size: 24px;" />
+         <Button fx:id="btnReiniciar" text="Reiniciar Juego" />
+      </VBox>
    </children>
 </AnchorPane>
