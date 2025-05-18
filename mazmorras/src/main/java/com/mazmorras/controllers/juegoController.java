@@ -4,6 +4,8 @@ import java.io.InputStream;
 
 import com.mazmorras.interfaces.Observer;
 import com.mazmorras.model.*;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,57 +16,85 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 public class juegoController implements Observer {
-    @FXML private AnchorPane anchorPane;
-    @FXML private GridPane gridPane;  // Para el escenario
-    @FXML private GridPane gridPane2; // Para personajes
-    @FXML private VBox endGamePanel;
-    @FXML private Label lblResultado;
-    @FXML private Button btnReiniciar;
-    
+    @FXML
+    private AnchorPane anchorPane;
+    @FXML
+    private GridPane gridPane; // Para el escenario
+    @FXML
+    private GridPane gridPane2; // Para personajes
+    @FXML
+    private VBox endGamePanel;
+    @FXML
+    private Label lblResultado;
+    @FXML
+    private Button btnReiniciar;
+
     private GestorJuego gestorJuego;
 
-    @FXML
-    public void initialize() {
-        gestorJuego = Proveedor.getInstance().getGestorJuego();
-        gestorJuego.subscribe(this);
-        
-        configurarControles();
-        configurarFinJuegoUI();
-        actualizarEscenario();
-        
+   // En el método initialize():
+@FXML
+public void initialize() {
+    gestorJuego = Proveedor.getInstance().getGestorJuego();
+    gestorJuego.subscribe(this);
+    
+    // Configuración inicial
+    configurarControles();
+    configurarFinJuegoUI();
+    actualizarEscenario();
+    
+    // Forzar enfoque inicial
+    Platform.runLater(() -> {
         anchorPane.requestFocus();
-    }
+        System.out.println("Enfoque solicitado");
+    });
+}
 
 private void configurarControles() {
+    anchorPane.setFocusTraversable(true);
+    anchorPane.requestFocus(); // Forzar foco inicial
+    
     anchorPane.setOnKeyPressed(event -> {
+        System.out.println("Tecla presionada: " + event.getCode()); // Debug
+        
         Protagonista prota = gestorJuego.getProtagonista();
         if (prota != null) {
             switch (event.getCode()) {
-    case W:
-    case UP:
-        prota.accion("W");
-        break;
-    case A:
-    case LEFT:
-        prota.accion("A");
-        break;
-    case S:
-    case DOWN:
-        prota.accion("S");
-        break;
-    case D:
-    case RIGHT:
-        prota.accion("D");
-        break;
-    default:
-        break;
-}
-            actualizarEscenario();
+                case W:
+                case UP:
+                    prota.accion("W");
+                    break;
+                case A:
+                case LEFT:
+                    prota.accion("A");
+                    break;
+                case S:
+                case DOWN:
+                    prota.accion("S");
+                    break;
+                case D:
+                case RIGHT:
+                    prota.accion("D");
+                    break;
+                default:
+                    return;
+            }
+            
+            // Forzar actualización visual
+            Platform.runLater(() -> {
+                actualizarEscenario();
+                System.out.println("Escenario actualizado"); // Debug
+            });
+        } else {
+            System.err.println("Error: protagonista es null");
         }
     });
-    anchorPane.setFocusTraversable(true);
+    
+    // Click para recuperar foco si se pierde
+    anchorPane.setOnMouseClicked(e -> {
+        anchorPane.requestFocus();
+        System.out.println("Foco recuperado manualmente"); // Debug
+    });
 }
-
 
     private void configurarFinJuegoUI() {
         endGamePanel.setVisible(false);
@@ -77,68 +107,80 @@ private void configurarControles() {
         checkFinJuego();
     }
 
-private void cargarEscenario() {
-    gridPane.getChildren().clear();
-    String[][] escenario = gestorJuego.getEscenario().getEscenario();
+    private void cargarEscenario() {
+        gridPane.getChildren().clear();
+        String[][] escenario = gestorJuego.getEscenario().getEscenario();
 
-    for (int i = 0; i < escenario.length; i++) {
-        for (int j = 0; j < escenario[i].length; j++) {
-            ImageView img = new ImageView();
-            img.setFitWidth(40);
-            img.setFitHeight(40);
+        for (int i = 0; i < escenario.length; i++) {
+            for (int j = 0; j < escenario[i].length; j++) {
+                ImageView img = new ImageView();
+                img.setFitWidth(40);
+                img.setFitHeight(40);
 
-            // Versión corregida (sin comillas y usando valores correctos)
-            String ruta = escenario[i][j].equals("S") ? 
-                gestorJuego.getEscenario().getSuelo() : 
-                gestorJuego.getEscenario().getPared();
+                // Versión corregida (sin comillas y usando valores correctos)
+                String ruta = escenario[i][j].equals("S") ? gestorJuego.getEscenario().getSuelo()
+                        : gestorJuego.getEscenario().getPared();
 
-            try {
-                InputStream is = getClass().getResourceAsStream(ruta);
-                if (is != null) {
-                    img.setImage(new Image(is));
-                } else {
-                    System.err.println("Imagen no encontrada: " + ruta);
-                    // Opcional: Cargar imagen por defecto
+                try {
+                    InputStream is = getClass().getResourceAsStream(ruta);
+                    if (is != null) {
+                        img.setImage(new Image(is));
+                    } else {
+                        System.err.println("Imagen no encontrada: " + ruta);
+                        // Opcional: Cargar imagen por defecto
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error cargando imagen: " + e.getMessage());
                 }
-            } catch (Exception e) {
-                System.err.println("Error cargando imagen: " + e.getMessage());
-            }
 
-            gridPane.add(img, j, i);
+                gridPane.add(img, j, i);
+            }
         }
     }
-}
 
-
-
-
- private void pintarPersonajes() {
+    private void pintarPersonajes() {
     gridPane2.getChildren().clear();
     
     // Pintar protagonista
     Protagonista prota = gestorJuego.getProtagonista();
     if (prota != null) {
-        pintarPersonaje(prota);
+        ImageView imgProta = crearImagenPersonaje(prota);
+        if (imgProta != null) {
+            int[] pos = prota.getPosicion();
+            GridPane.setRowIndex(imgProta, pos[0]);
+            GridPane.setColumnIndex(imgProta, pos[1]);
+            gridPane2.getChildren().add(imgProta);
+            System.out.println("Protagonista pintado en: " + pos[0] + "," + pos[1]);
+        }
     }
     
     // Pintar enemigos
-    gestorJuego.getEnemigos().forEach(this::pintarPersonaje);
+    gestorJuego.getEnemigos().forEach(enemigo -> {
+        ImageView imgEnemigo = crearImagenPersonaje(enemigo);
+        if (imgEnemigo != null) {
+            int[] pos = enemigo.getPosicion();
+            GridPane.setRowIndex(imgEnemigo, pos[0]);
+            GridPane.setColumnIndex(imgEnemigo, pos[1]);
+            gridPane2.getChildren().add(imgEnemigo);
+        }
+    });
 }
 
-private void pintarPersonaje(Personaje personaje) {
+private ImageView crearImagenPersonaje(Personaje personaje) {
     try {
         InputStream is = getClass().getResourceAsStream(personaje.getImagen());
         if (is == null) {
             System.err.println("Imagen no encontrada: " + personaje.getImagen());
-            return;
+            return null;
         }
         
         ImageView img = new ImageView(new Image(is));
         img.setFitWidth(40);
         img.setFitHeight(40);
-        gridPane2.add(img, personaje.getPosicion()[1], personaje.getPosicion()[0]);
+        return img;
     } catch (Exception e) {
-        System.err.println("Error cargando imagen de " + personaje.getClass().getSimpleName() + ": " + e.getMessage());
+        System.err.println("Error cargando imagen: " + e.getMessage());
+        return null;
     }
 }
 
