@@ -1,7 +1,6 @@
 package com.mazmorras.model;
 
 import java.util.Random;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class Protagonista extends Personaje {

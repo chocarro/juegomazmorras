@@ -6,11 +6,13 @@ import java.util.Random;
 
 public class Enemigo extends Personaje{
   private int percepcion;
+  
 
   public Enemigo (int percepcion,  String imagen,int id, int salud, int ataque, int defensa, int velocidad){
     super(imagen, id, salud, ataque, defensa, velocidad);
     this.percepcion=percepcion;
   }
+
 
     public int getPercepcion() {
         return this.percepcion;

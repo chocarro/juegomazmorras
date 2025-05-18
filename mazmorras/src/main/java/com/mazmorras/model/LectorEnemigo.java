@@ -21,7 +21,7 @@ public LectorEnemigo(){
 
 public ArrayList<Personaje> leerCSV() throws Exception {
         this.oponente.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader("mazmorras/src/main/resources/mazmorras/data/enemigos.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("/mazmorras/data/enemigos.csv"))) {
             String linea;
             if ((linea = br.readLine()) == null)
                 throw new Exception("Texto vacío");

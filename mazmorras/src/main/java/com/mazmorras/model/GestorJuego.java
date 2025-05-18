@@ -1,6 +1,9 @@
 package com.mazmorras.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import com.mazmorras.interfaces.Observer;
 
 public class GestorJuego {
@@ -14,7 +17,6 @@ public class GestorJuego {
     
     // Estado del juego
     private boolean juegoActivo;
-    private String nombre;
     
     // Sistema de observadores
     private ArrayList<Observer> observers;
@@ -64,21 +66,60 @@ public class GestorJuego {
         escenario.getEscenario()[0][0] = "0"; // Posición inicial
     }
 
-    private void cargarEnemigosIniciales() {
-        LectorEnemigo lectorEnemigos = new LectorEnemigo();
-        try {
-            for (Personaje p : lectorEnemigos.leerCSV()) {
-                Enemigo enemigo = (Enemigo) p;
-                ArrayList<int[]> posiciones = escenario.generarPosiciones(1);
+private void cargarEnemigosIniciales() {
+    LectorEnemigo lectorEnemigos = new LectorEnemigo();
+    try {
+        for (Personaje p : lectorEnemigos.leerCSV()) {
+            Enemigo enemigo = (Enemigo) p;
+            ArrayList<int[]> posiciones = escenario.generarPosiciones(1);
+            
+            if (!posiciones.isEmpty()) {
                 int[] pos = posiciones.get(0);
                 enemigo.setPosicion(pos);
                 escenario.getEscenario()[pos[0]][pos[1]] = String.valueOf(enemigo.getId());
                 this.enemigos.add(enemigo);
+                
+                System.out.println("Enemigo creado en posición: " + Arrays.toString(pos) + 
+                                 " con imagen: " + enemigo.getImagen());
             }
-        } catch (Exception e) {
-            System.err.println("Error cargando enemigos: " + e.getMessage());
         }
+    } catch (Exception e) {
+        System.err.println("Error cargando enemigos: " + e.getMessage());
+        // Crear enemigos por defecto si falla la carga
+        crearEnemigosPorDefecto();
     }
+}
+
+private void crearEnemigosPorDefecto() {
+    Enemigo goblin = new Enemigo(
+        3, // percepción
+        "/mazmorras/images/goblin.png", // ruta imagen
+        1, // id
+        50, // salud
+        10, // ataque
+        5,  // defensa
+        2   // velocidad
+    );
+    
+    ArrayList<int[]> posiciones = escenario.generarPosiciones(1);
+    if (!posiciones.isEmpty()) {
+        int[] pos = posiciones.get(0);
+        goblin.setPosicion(pos);
+        escenario.getEscenario()[pos[0]][pos[1]] = String.valueOf(goblin.getId());
+        this.enemigos.add(goblin);
+    }
+}
+
+private void crearEnemigoPorDefecto(int id, String imagen, int percepcion, int salud, int ataque, int defensa, int velocidad) {
+    Enemigo enemigo = new Enemigo(percepcion, imagen, id, salud, ataque, defensa, velocidad);
+    ArrayList<int[]> posiciones = escenario.generarPosiciones(1);
+    if (!posiciones.isEmpty()) {
+        int[] pos = posiciones.get(0);
+        enemigo.setPosicion(pos);
+        escenario.getEscenario()[pos[0]][pos[1]] = String.valueOf(id);
+        this.enemigos.add(enemigo);
+    }
+}
 
     // Sistema de observadores
     public void subscribe(Observer observer) {
@@ -153,11 +194,6 @@ public class GestorJuego {
         return protagonista;
     }
 
-
-    public void setProtagonista(Protagonista prota) {
-            this.protagonista = prota;
-    }
-
     public ArrayList<Enemigo> getEnemigos() {
         return new ArrayList<>(enemigos); // Devuelve copia para evitar modificaciones externas
     }
@@ -171,9 +207,6 @@ public class GestorJuego {
     }
 
 
-
-
-
     // Métodos para UI
     public String getEstadoJuego() {
         if (juegoActivo) return "Juego en curso";
@@ -181,4 +214,7 @@ public class GestorJuego {
     }
 
 
+    public void setProtagonista(Protagonista prota) {
+            this.protagonista = prota;
+    }
 }

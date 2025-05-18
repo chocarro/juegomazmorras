@@ -3,7 +3,6 @@ package com.mazmorras.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 public class Escenario {
     private String [][] escenario;
@@ -15,8 +14,15 @@ public class Escenario {
     public Escenario(){
         this.lector=new LectorEscenario();
         try {
-            this.escenario= lector.leerCSV(pared);
+            this.escenario= lector.leerCSV("escenario.csv");
         } catch (IOException e) {
+            System.err.println("Error cargando escenario: " + e.getMessage());
+        // Crear escenario por defecto si falla la carga
+        this.escenario = new String[][]{
+            {"P","P","P"},
+            {"P","S","P"},
+            {"P","P","P"}
+        };
             e.printStackTrace();
         }
 
@@ -75,13 +81,7 @@ public class Escenario {
 }
 
 
-//esta funcion peta porque entra en un bucle infinito
-/**
- * Genera posiciones aleatorias en celdas vacías ("0"), reutilizando celdas si es necesario
- * @param cantidad Número de posiciones requeridas
- * @return Lista de coordenadas [fila, columna]
- * @throws IllegalStateException si no hay ninguna celda vacía disponible
- */
+
 public ArrayList<int[]> generarPosiciones(int cantidad) {
     ArrayList<int[]> posiciones = new ArrayList<>();
     ArrayList<int[]> celdasVacias = new ArrayList<>();
@@ -99,8 +99,6 @@ public ArrayList<int[]> generarPosiciones(int cantidad) {
     if (celdasVacias.isEmpty()) {
         throw new IllegalStateException("No hay ninguna celda vacía en el escenario");
     }
-    
-    Random rand = new Random();
     
     // 3. Si no hay suficientes celdas vacías, reutilizamos las existentes
     for (int i = 0; i < cantidad; i++) {

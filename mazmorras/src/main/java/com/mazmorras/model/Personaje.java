@@ -1,7 +1,7 @@
 package com.mazmorras.model;
 
-public class Personaje  implements Comparable{
-    protected static String imagen;
+public abstract class Personaje  implements Comparable{
+    protected  String imagen;
     protected int id;
     protected int salud;
     protected int ataque;
@@ -58,6 +58,14 @@ public class Personaje  implements Comparable{
 
     public void setVelocidad(int velocidad) {
         this.velocidad = velocidad;
+    }
+
+    public String getImagen() {
+        return this.imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
  

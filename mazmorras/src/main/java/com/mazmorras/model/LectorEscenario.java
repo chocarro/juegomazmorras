@@ -3,6 +3,7 @@ package com.mazmorras.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 
 public class LectorEscenario {
@@ -16,6 +17,18 @@ public class LectorEscenario {
     }
 
     public String[][] leerCSV(String nombremap) throws IOException {
+ if (nombremap == null || nombremap.trim().isEmpty()) {
+        nombremap = "escenario.csv"; // Valor por defecto
+    }
+
+     String rutaCompleta = "/mazmorras/data/" + nombremap;
+    InputStream is = getClass().getResourceAsStream(rutaCompleta);
+    
+    if (is == null) {
+        throw new IOException("Archivo no encontrado: " + rutaCompleta + 
+                           "\n src/main/resources/mazmorras/data/");
+    }
+        
         LinkedList<String[]> filas = new LinkedList<>();
 
         try (BufferedReader br = new BufferedReader(
