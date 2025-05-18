@@ -2,7 +2,6 @@ package com.mazmorras.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import com.mazmorras.interfaces.Observer;
 
@@ -107,17 +106,6 @@ private void crearEnemigosPorDefecto() {
         goblin.setPosicion(pos);
         escenario.getEscenario()[pos[0]][pos[1]] = String.valueOf(goblin.getId());
         this.enemigos.add(goblin);
-    }
-}
-
-private void crearEnemigoPorDefecto(int id, String imagen, int percepcion, int salud, int ataque, int defensa, int velocidad) {
-    Enemigo enemigo = new Enemigo(percepcion, imagen, id, salud, ataque, defensa, velocidad);
-    ArrayList<int[]> posiciones = escenario.generarPosiciones(1);
-    if (!posiciones.isEmpty()) {
-        int[] pos = posiciones.get(0);
-        enemigo.setPosicion(pos);
-        escenario.getEscenario()[pos[0]][pos[1]] = String.valueOf(id);
-        this.enemigos.add(enemigo);
     }
 }
 

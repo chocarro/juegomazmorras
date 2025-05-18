@@ -31,5 +31,8 @@ public class primeraController {
         AnchorPane.setLeftAnchor(prota.getRoot(), 0.0);
         AnchorPane.setRightAnchor(prota.getRoot(), 0.0);
         anchorpane2.getChildren().setAll(prota.getRoot());
+
+        
     }
 }
+
