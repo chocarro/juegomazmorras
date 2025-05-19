@@ -20,6 +20,8 @@ public abstract class Personaje  implements Comparable{
         this.posicion= new int[2];
     }
 
+      // Getters y Setters 
+
     public int getId() {
         return this.id;
     }
@@ -68,8 +70,6 @@ public abstract class Personaje  implements Comparable{
         this.imagen = imagen;
     }
 
- 
-
     public int[] getPosicion() {
         return this.posicion;
     }
@@ -77,6 +77,9 @@ public abstract class Personaje  implements Comparable{
     public void setPosicion(int[] posicion) {
         this.posicion = posicion;
     }
+
+
+      // METODOS 
 
     public void mover(int nuevaFila, int nuevaCol, String[][] escenario) {
         GestorJuego gestor = Proveedor.getInstance().getGestorJuego();

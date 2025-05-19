@@ -17,6 +17,8 @@ public class Protagonista extends Personaje {
         this.posicion = new int[] { 0, 0 };
     }
 
+      // Getters y Setters 
+
     public int getId() {
         return this.id;
     }
@@ -56,6 +58,9 @@ public class Protagonista extends Personaje {
     public void setNombre(String nombre) {
         this.imagen = nombre;
     }
+
+
+      // METODOS
 
     @Override
     public void atacar(int nuevaFila, int nuevaCol, String[][] escenario) {
