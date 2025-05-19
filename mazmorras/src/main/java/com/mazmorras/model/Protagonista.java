@@ -14,7 +14,7 @@ public class Protagonista extends Personaje {
     public Protagonista(String nombre, String imagen, int id, int salud, int ataque, int defensa, int velocidad,
             int porcentajeCritico, int getSaludMaxima) {
         super(imagen, id, salud, ataque, defensa, velocidad);
-        this.posicion = new int[] { 0, 0 };
+        this.posicion = new int[] { 1, 1 };
     }
 
       // Getters y Setters 
@@ -123,7 +123,7 @@ public class Protagonista extends Personaje {
 
         // Decidir acción (mover o atacar)
         String contenidoCelda = escenario[nuevaFila][nuevaColumna];
-        if (contenidoCelda.equals("0")) {
+        if (contenidoCelda.equals("S")) {
             // Mover (casilla vacía)
             this.mover(nuevaFila, nuevaColumna, escenario);
         } else if (contenidoCelda.matches("[1-9]+")) {

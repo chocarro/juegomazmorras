@@ -84,7 +84,7 @@ public abstract class Personaje  implements Comparable{
     public void mover(int nuevaFila, int nuevaCol, String[][] escenario) {
         GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
         int[] pos = this.getPosicion();
-        escenario[pos[0]][pos[1]] = "s";
+        escenario[pos[0]][pos[1]] = "S";
         this.setPosicion(new int[] { nuevaFila, nuevaCol });
         escenario[nuevaFila][nuevaCol] = "" + this.id;
         gestor.notifyObservers();

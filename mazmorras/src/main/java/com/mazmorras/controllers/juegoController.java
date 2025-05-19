@@ -142,6 +142,7 @@ private void configurarControles() {
     gridPane2.getChildren().clear();
     
     // Pintar protagonista
+    // TODO reparar. Añadir la imagen del protagonista en las coordenadas correctas. Para ello, empezar revisando los métodos GRIDPANE.SETROWINDEX. Buscar que métodos usar para insertar un imageview en las coordenadas de gridpane2
     Protagonista prota = gestorJuego.getProtagonista();
     if (prota != null) {
         ImageView imgProta = crearImagenPersonaje(prota);
