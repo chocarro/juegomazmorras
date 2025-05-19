@@ -81,14 +81,17 @@ public class GestorJuego {
     }
 
     private void crearEnemigosPorDefecto() {
-        Enemigo goblin = new Enemigo(
-                3, // percepción
-                "/mazmorras/images/goblin.png", // ruta imagen
-                1, // id
-                50, // salud
-                10, // ataque
-                5, // defensa
-                2 // velocidad
+       Enemigo goblin = new Enemigo(
+        3, // percepción
+        "/mazmorras/images/goblin.png", // ruta imagen
+        1, // id
+        50, // vida (antes salud)
+        10, // ataque
+        5, // defensa
+        2, // velocidad
+        8, // fuerza (nuevo parámetro)
+        4, // defensaEnemigo (nuevo parámetro)
+        50 // vida (nuevo parámetro, mismo valor que el anterior)
         );
 
         ArrayList<int[]> posiciones = escenario.generarPosiciones(1);

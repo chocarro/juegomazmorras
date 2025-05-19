@@ -11,7 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 
-public class protaController implements Observer { 
+public class protaController implements Observer {
     @FXML
     AnchorPane anchorPaneProta;
     @FXML

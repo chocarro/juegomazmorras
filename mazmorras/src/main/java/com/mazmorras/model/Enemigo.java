@@ -6,13 +6,43 @@ import java.util.Random;
 
 public class Enemigo extends Personaje {
     private int percepcion;
+      private int vida;
+    private int defensaEnemigo;
+    private int fuerza;
 
-    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad) {
+    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad, int fuerza, int defensaEnemigo, int vida) {
         super(imagen, id, salud, ataque, defensa, velocidad);
         this.percepcion = percepcion;
+        this.vida = vida;
+        this.defensaEnemigo = defensaEnemigo;
+        this.fuerza = fuerza;
     }
 
     // Getters y Setters
+
+    public int getVida() {
+        return this.vida;
+    }
+
+    public void setVida(int vida) {
+        this.vida = vida;
+    }
+
+    public int getDefensaEnemigo() {
+        return this.defensaEnemigo;
+    }
+
+    public void setDefensaEnemigo(int defensaEnemigo) {
+        this.defensaEnemigo = defensaEnemigo;
+    }
+
+    public int getFuerza() {
+        return this.fuerza;
+    }
+
+    public void setFuerza(int fuerza) {
+        this.fuerza = fuerza;
+    }
 
     public int getPercepcion() {
         return this.percepcion;
