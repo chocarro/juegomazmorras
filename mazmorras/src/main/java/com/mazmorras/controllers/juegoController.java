@@ -1,10 +1,8 @@
 package com.mazmorras.controllers;
 
 import java.io.InputStream;
-
 import com.mazmorras.interfaces.Observer;
 import com.mazmorras.model.*;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -32,26 +30,27 @@ public class juegoController implements Observer {
     private Label lblResultado;
     @FXML
     private Button btnReiniciar;
-
     private GestorJuego gestorJuego;
 
-   // En el método initialize():
+
 @FXML
 public void initialize() {
     gestorJuego = Proveedor.getInstance().getGestorJuego();
     gestorJuego.subscribe(this);
     
-    // Configuración inicial
     configurarControles();
     configurarFinJuegoUI();
     actualizarEscenario();
     
-    // Forzar enfoque inicial
     Platform.runLater(() -> {
         anchorPane.requestFocus();
         System.out.println("Enfoque solicitado");
     });
 }
+
+
+
+
 
 private void configurarControles() {
     anchorPane.setFocusTraversable(true);
@@ -92,13 +91,15 @@ private void configurarControles() {
             System.err.println("Error: protagonista es null");
         }
     });
-    
+
     // Click para recuperar foco si se pierde
     anchorPane.setOnMouseClicked(e -> {
         anchorPane.requestFocus();
         System.out.println("Foco recuperado manualmente"); 
     });
 }
+
+
 
     private void configurarFinJuegoUI() {
         endGamePanel.setVisible(false);
@@ -110,6 +111,10 @@ private void configurarControles() {
         pintarPersonajes();
         checkFinJuego();
     }
+
+
+
+
 
    private void cargarEscenario() {
     gridPane.getChildren().clear();
@@ -156,6 +161,10 @@ for (int j = 0; j < escenario[0].length; j++) {
     }
 }
 
+
+
+
+
 private void pintarPersonajes() {
     gridPane2.getChildren().clear();
     
@@ -176,12 +185,17 @@ private void pintarPersonajes() {
         ImageView imgEnemigo = crearImagenPersonaje(enemigo);
         if (imgEnemigo != null) {
             int[] pos = enemigo.getPosicion();
-            GridPane.setRowIndex(imgEnemigo, pos[0]);
-            GridPane.setColumnIndex(imgEnemigo, pos[1]);
-            gridPane2.getChildren().add(imgEnemigo);
+            //GridPane.setRowIndex(imgEnemigo, pos[0]);
+            //GridPane.setColumnIndex(imgEnemigo, pos[1]);
+            //gridPane2.getChildren().add(imgEnemigo);
+            gridPane2.add(imgEnemigo, pos[1], pos[0]);
+
         }
     });
 }
+
+
+
 
 private ImageView crearImagenPersonaje(Personaje personaje) {
     try {
@@ -200,6 +214,8 @@ private ImageView crearImagenPersonaje(Personaje personaje) {
         return null;
     }
 }
+
+
 
 
     private void checkFinJuego() {

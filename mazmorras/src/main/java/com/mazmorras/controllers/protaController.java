@@ -18,7 +18,6 @@ public class protaController implements Observer {
     GridPane gridPaneProta;
     @FXML
     ImageView imageProta;
-
     @FXML
     Label nombre;
     @FXML

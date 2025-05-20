@@ -23,10 +23,7 @@ public class GestorJuego {
         inicializarJuego();
     }
 
-    public Protagonista buscarProta() {
-        return this.protagonista;
-    }
-
+    // Patrón Singleton
     public static synchronized GestorJuego getInstance() {
         if (instance == null) {
             instance = new GestorJuego();
@@ -149,6 +146,10 @@ public class GestorJuego {
                 .orElse(null);
     }
 
+    public Protagonista buscarProta() {
+        return this.protagonista;
+    }
+
     // Gestión de enemigos
     public void eliminarEnemigo(Enemigo enemigo) {
         if (enemigo != null) {
@@ -189,14 +190,14 @@ public class GestorJuego {
         return juegoActivo == false && protagonista.getSalud() > 0;
     }
 
+    public void setProtagonista(Protagonista prota) {
+        this.protagonista = prota;
+    }
+
     // Métodos para UI
     public String getEstadoJuego() {
         if (juegoActivo)
             return "Juego en curso";
         return isVictoria() ? "¡Victoria!" : "¡Derrota!";
-    }
-
-    public void setProtagonista(Protagonista prota) {
-        this.protagonista = prota;
     }
 }
