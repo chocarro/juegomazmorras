@@ -3,6 +3,9 @@ package com.mazmorras.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,7 +23,9 @@ public class LectorEnemigo {
 
     public ArrayList<Personaje> leerCSV() throws Exception {
         this.oponente.clear();
-        try (BufferedReader br = new BufferedReader(new FileReader("/mazmorras/data/enemigos.csv"))) {
+
+        try (InputStream is = getClass().getResourceAsStream("/com/mazmorras/data/enemigos.csv");
+     BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String linea;
             if ((linea = br.readLine()) == null)
                 throw new Exception("Texto vacío");
