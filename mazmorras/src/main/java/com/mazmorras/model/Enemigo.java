@@ -9,17 +9,36 @@ public class Enemigo extends Personaje {
       private int vida;
     private int defensaEnemigo;
     private int fuerza;
+      private int posX;  
+    private int posY;
 
-    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad, int fuerza, int defensaEnemigo, int vida) {
+    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad, int fuerza, int defensaEnemigo, int vida, int posX, int posY) {
         super(imagen, id, salud, ataque, defensa, velocidad);
         this.percepcion = percepcion;
         this.vida = vida;
         this.defensaEnemigo = defensaEnemigo;
         this.fuerza = fuerza;
+         this.posX = posX;
+        this.posY = posY;
     }
 
     // Getters y Setters
+  public int getPosX() {
+        return posX;
+    }
 
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public int getPosY() {
+        return posY;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
+    }
+    
     public int getVida() {
         return this.vida;
     }

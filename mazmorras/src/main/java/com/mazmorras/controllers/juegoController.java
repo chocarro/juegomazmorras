@@ -125,13 +125,13 @@ private void configurarControles() {
 
 
     for (int i = 0; i < escenario.length; i++) {
-    RowConstraints rc = new RowConstraints(40); // Mismo tamaño que gridPane
+    RowConstraints rc = new RowConstraints(40); 
     rc.setValignment(VPos.CENTER);
     gridPane2.getRowConstraints().add(rc);
 }
 
 for (int j = 0; j < escenario[0].length; j++) {
-    ColumnConstraints cc = new ColumnConstraints(40); // Mismo tamaño que gridPane
+    ColumnConstraints cc = new ColumnConstraints(40); 
     cc.setHalignment(HPos.CENTER);
     gridPane2.getColumnConstraints().add(cc);
 }
