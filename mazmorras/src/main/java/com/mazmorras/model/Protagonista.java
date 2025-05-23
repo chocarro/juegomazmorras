@@ -6,18 +6,24 @@ import java.util.function.Consumer;
 public class Protagonista extends Personaje {
 
     private String imagen = "/mazmorras/images/personaje.png";
-    private int getSaludMaxima = 100;
     private int porcentajeCritico;
-    private int id;
-
 
     public Protagonista(String nombre, String imagen, int id, int salud, int ataque, int defensa, int velocidad,
-            int porcentajeCritico, int getSaludMaxima) {
-        super(imagen, id, salud, ataque, defensa, velocidad);
+            int saludMaxima, int porcentajeCritico) {
+        super(imagen, id, salud, ataque, defensa, velocidad, saludMaxima);
         this.posicion = new int[] { 1, 1 };
+        this.porcentajeCritico = porcentajeCritico;
     }
 
-      // Getters y Setters 
+    // Getters y Setters
+
+    public int getPorcentajeCritico() {
+        return this.porcentajeCritico;
+    }
+
+    public void setPorcentajeCritico(int porcentajeCritico) {
+        this.porcentajeCritico = porcentajeCritico;
+    }
 
     public int getId() {
         return this.id;
@@ -35,22 +41,6 @@ public class Protagonista extends Personaje {
         this.id = id;
     }
 
-    public int getGetSaludMaxima() {
-        return this.getSaludMaxima;
-    }
-
-    public void setGetSaludMaxima(int getSaludMaxima) {
-        this.getSaludMaxima = getSaludMaxima;
-    }
-
-    public int getPorcentajeCritico() {
-        return this.porcentajeCritico;
-    }
-
-    public void setPorcentajeCritico(int porcentajeCritico) {
-        this.porcentajeCritico = porcentajeCritico;
-    }
-
     public String getNombre() {
         return this.imagen;
     }
@@ -59,8 +49,7 @@ public class Protagonista extends Personaje {
         this.imagen = nombre;
     }
 
-
-      // METODOS
+    // METODOS
 
     @Override
     public void atacar(int nuevaFila, int nuevaCol, String[][] escenario) {
@@ -139,13 +128,8 @@ public class Protagonista extends Personaje {
                 "}";
     }
 
-
-public void forEach(Consumer<Protagonista> action) {
-    action.accept(this);
-}
-
-
-
-
+    public void forEach(Consumer<Protagonista> action) {
+        action.accept(this);
+    }
 
 }

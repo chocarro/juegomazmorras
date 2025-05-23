@@ -7,20 +7,30 @@ public abstract class Personaje  implements Comparable{
     protected int ataque;
     protected int defensa;
     protected int velocidad;
+    protected int saludMaxima;
     protected int[] posicion;
 
 
-    public Personaje(String imagen, int id, int salud, int ataque, int defensa, int velocidad) {
+    public Personaje(String imagen, int id, int salud, int ataque, int defensa, int velocidad,int saludMaxima) {
         this.imagen = imagen;
         this.id=id;
         this.salud = salud;
         this.ataque = ataque;
         this.defensa = defensa;
         this.velocidad = velocidad;
+        this.saludMaxima = saludMaxima;
         this.posicion= new int[2];
     }
 
       // Getters y Setters 
+
+    public int getSaludMaxima() {
+        return this.saludMaxima;
+    }
+
+    public void setSaludMaxima(int saludMaxima) {
+        this.saludMaxima = saludMaxima;
+    }
 
     public int getId() {
         return this.id;

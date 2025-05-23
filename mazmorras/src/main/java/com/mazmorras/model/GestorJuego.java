@@ -23,14 +23,6 @@ public class GestorJuego {
         inicializarJuego();
     }
 
-    // Patrón Singleton
-    public static synchronized GestorJuego getInstance() {
-        if (instance == null) {
-            instance = new GestorJuego();
-        }
-        return instance;
-    }
-
     // Métodos de inicialización
     private void inicializarJuego() {
         inicializarProtagonista();
@@ -76,7 +68,6 @@ public class GestorJuego {
         }
     } catch (Exception e) {
         System.err.println("ERROR CRÍTICO: No se pudieron cargar los enemigos desde el archivo CSV.");
-        throw new RuntimeException("Falló la carga de enemigos: " + e.getMessage(), e);
     }
 }
 

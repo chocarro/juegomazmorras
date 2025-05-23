@@ -24,7 +24,7 @@ public class LectorEnemigo {
         this.oponente.clear();
 
         try (InputStream is = getClass().getResourceAsStream("/mazmorras/data/enemigos.csv");
-     BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String linea;
             if ((linea = br.readLine()) == null)
                 throw new Exception("Texto vacío");
@@ -32,20 +32,18 @@ public class LectorEnemigo {
                 String[] datos = linea.split(",");
                 String rutaImagen = imagenes.get(datos[1]);
                 this.oponente.add(new Enemigo(
-                        Integer.parseInt(datos[0]),  // percepción
-    rutaImagen,                  // ruta imagen
-    Integer.parseInt(datos[2]),  // id
-    Integer.parseInt(datos[3]),  // vida
-    Integer.parseInt(datos[4]),  // ataque
-    Integer.parseInt(datos[5]),  // defensa
-    Integer.parseInt(datos[6]),  // velocidad
-    Integer.parseInt(datos[7]),  // fuerza
-    Integer.parseInt(datos[8]),  // defensaEnemigo
-    Integer.parseInt(datos[9]),  // vida
-    Integer.parseInt(datos[10]), // posición x
-    Integer.parseInt(datos[11])  // posición y
+                        Integer.parseInt(datos[0]), // percepción
+                        rutaImagen, // ruta imagen
+                        Integer.parseInt(datos[2]), // id
+                        Integer.parseInt(datos[3]), // salud
+                        Integer.parseInt(datos[4]), // ataque
+                        Integer.parseInt(datos[5]), // defensa
+                        Integer.parseInt(datos[6]), // velocidad
+                        Integer.parseInt(datos[7]), // saludMaxima
+                        Integer.parseInt(datos[10]), // posX
+                        Integer.parseInt(datos[11]) // posY
                 ));
-                
+
             }
         } catch (IOException e) {
             e.printStackTrace();

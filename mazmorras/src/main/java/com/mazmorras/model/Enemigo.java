@@ -6,18 +6,12 @@ import java.util.Random;
 
 public class Enemigo extends Personaje {
     private int percepcion;
-      private int vida;
-    private int defensaEnemigo;
-    private int fuerza;
       private int posX;  
     private int posY;
 
-    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad, int fuerza, int defensaEnemigo, int vida, int posX, int posY) {
-        super(imagen, id, salud, ataque, defensa, velocidad);
+    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad,int saludMaxima, int posX, int posY) {
+        super( imagen,  id,  salud,  ataque,  defensa,  velocidad, saludMaxima);
         this.percepcion = percepcion;
-        this.vida = vida;
-        this.defensaEnemigo = defensaEnemigo;
-        this.fuerza = fuerza;
          this.posX = posX;
         this.posY = posY;
     }
@@ -37,30 +31,6 @@ public class Enemigo extends Personaje {
 
     public void setPosY(int posY) {
         this.posY = posY;
-    }
-    
-    public int getVida() {
-        return this.vida;
-    }
-
-    public void setVida(int vida) {
-        this.vida = vida;
-    }
-
-    public int getDefensaEnemigo() {
-        return this.defensaEnemigo;
-    }
-
-    public void setDefensaEnemigo(int defensaEnemigo) {
-        this.defensaEnemigo = defensaEnemigo;
-    }
-
-    public int getFuerza() {
-        return this.fuerza;
-    }
-
-    public void setFuerza(int fuerza) {
-        this.fuerza = fuerza;
     }
 
     public int getPercepcion() {
