@@ -83,19 +83,12 @@ private void configurarControles() {
             }
             
             // Forzar actualización visual
-            Platform.runLater(() -> {
+      
                 actualizarEscenario();
                 System.out.println("Escenario actualizado"); 
-            });
         } else {
             System.err.println("Error: protagonista es null");
         }
-    });
-
-    // Click para recuperar foco si se pierde
-    anchorPane.setOnMouseClicked(e -> {
-        anchorPane.requestFocus();
-        System.out.println("Foco recuperado manualmente"); 
     });
 }
 
