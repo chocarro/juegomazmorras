@@ -2,11 +2,10 @@
  * @author Lucía Garrido Chocarro
  * @author Ángel Galea Anisa
  */
-package com.mazmorras;
 
+package com.mazmorras;
 import javafx.application.Application;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 /**
@@ -41,7 +40,7 @@ public class App extends Application {
         
         // Configura las escenas con identificadores
         sm.setScene(SceneID.MAIN, "main");    
-       // sm.setScene(SceneID.JUEGO, "juego");    
+
         // Carga la escena principal
         sm.loadScene(SceneID.MAIN);
     }

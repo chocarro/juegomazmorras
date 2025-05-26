@@ -1,5 +1,12 @@
 package com.mazmorras.controllers;
 
+/**
+ * Controlador principal para la interfaz de usuario del juego Mazmorras.
+ * Gestiona la interacción del usuario, actualiza la vista y coordina
+ * las acciones con el modelo del juego a través del {@link GestorJuego}.
+ * Implementa el patrón Observer para recibir actualizaciones del modelo.
+ */
+
 import java.io.InputStream;
 import com.mazmorras.interfaces.Observer;
 import com.mazmorras.model.*;
@@ -33,7 +40,6 @@ public class juegoController implements Observer {
     private Label lblDefensaProta;
     @FXML
     private Label lblVelocidadProta;
-
     @FXML
     private AnchorPane anchorPane;
     @FXML
@@ -46,9 +52,14 @@ public class juegoController implements Observer {
     private Label lblResultado;
     @FXML
     private Button btnReiniciar;
-    
     private GestorJuego gestorJuego;
     private boolean procesandoTurno = false; // Para evitar múltiples procesamientos simultáneos
+
+    /**
+     * Método de inicialización llamado automáticamente por JavaFX.
+     * Configura los componentes iniciales, suscribe el controlador como observador,
+     * carga el escenario y configura los controles de teclado.
+     */
 
     @FXML
     public void initialize() {
@@ -58,7 +69,7 @@ public class juegoController implements Observer {
 
             configurarFinJuegoUI();
             cargarEscenario();
-            
+
             // Validar y corregir posición del protagonista antes de actualizar vista
             validarPosicionProtagonista();
             actualizarVista(); // Actualizar todo al inicio
@@ -83,37 +94,44 @@ public class juegoController implements Observer {
         }
     }
 
+    /**
+     * Valida y corrige la posición del protagonista en el escenario.
+     * Si la posición actual es inválida (fuera de límites o en pared),
+     * busca una posición válida alternativa.
+     */
+
     private void validarPosicionProtagonista() {
         Protagonista prota = gestorJuego.getProtagonista();
         if (prota != null) {
             int[] pos = prota.getPosicion();
             String[][] escenario = gestorJuego.getEscenario().getEscenario();
-            
+
             System.out.println("Validando posición del protagonista: [" + pos[0] + "," + pos[1] + "]");
-            
-            // Verificar si la posición actual es válida (no es pared y está dentro de límites)
-            if (pos[0] < 0 || pos[0] >= escenario.length || 
-                pos[1] < 0 || pos[1] >= escenario[0].length || 
-                escenario[pos[0]][pos[1]].equals("P")) {
-                
+
+            // Verificar si la posición actual es válida (no es pared y está dentro de
+            // límites)
+            if (pos[0] < 0 || pos[0] >= escenario.length ||
+                    pos[1] < 0 || pos[1] >= escenario[0].length ||
+                    escenario[pos[0]][pos[1]].equals("P")) {
+
                 System.err.println("Posición inválida del protagonista: [" + pos[0] + "," + pos[1] + "]");
-                
+
                 // Buscar la primera posición válida (que no sea pared)
                 boolean posicionEncontrada = false;
                 for (int i = 1; i < escenario.length - 1 && !posicionEncontrada; i++) {
                     for (int j = 1; j < escenario[i].length - 1 && !posicionEncontrada; j++) {
                         if (!escenario[i][j].equals("P")) {
-                            prota.setPosicion(new int[]{i, j});
+                            prota.setPosicion(new int[] { i, j });
                             System.out.println("Protagonista reposicionado a: [" + i + "," + j + "]");
                             posicionEncontrada = true;
                         }
                     }
                 }
-                
+
                 if (!posicionEncontrada) {
                     System.err.println("ERROR CRÍTICO: No se encontró posición válida para el protagonista");
                     // Como último recurso, colocar en [1,1] aunque sea pared
-                    prota.setPosicion(new int[]{1, 1});
+                    prota.setPosicion(new int[] { 1, 1 });
                 }
             } else {
                 System.out.println("Posición del protagonista válida: [" + pos[0] + "," + pos[1] + "]");
@@ -121,17 +139,28 @@ public class juegoController implements Observer {
         }
     }
 
+    /**
+     * Configura los eventos de teclado para controlar al protagonista.
+     * Las teclas WASD y flechas direccionales son válidas.
+     */
+
     private void configurarEventosTeclado() {
         anchorPane.getScene().setOnKeyPressed(event -> {
             if (!procesandoTurno && gestorJuego.isJuegoActivo()) {
                 configurarControles(event.getCode());
             }
         });
-        
+
         // Asegurar que el anchorPane pueda recibir focus para eventos de teclado
         anchorPane.setFocusTraversable(true);
         anchorPane.requestFocus();
     }
+
+    /**
+     * Procesa la tecla presionada y ejecuta la acción correspondiente.
+     * 
+     * @param keyCode Código de la tecla presionada
+     */
 
     private void configurarControles(KeyCode keyCode) {
         if (procesandoTurno || !gestorJuego.isJuegoActivo()) {
@@ -139,18 +168,31 @@ public class juegoController implements Observer {
         }
 
         System.out.println("Tecla presionada: " + keyCode);
-        
+
         String direccion = "";
         switch (keyCode) {
-            case W: case UP:    direccion = "W"; break;
-            case A: case LEFT:  direccion = "A"; break;
-            case S: case DOWN:  direccion = "S"; break;
-            case D: case RIGHT: direccion = "D"; break;
-            default: return;
+            case W:
+            case UP:
+                direccion = "W";
+                break;
+            case A:
+            case LEFT:
+                direccion = "A";
+                break;
+            case S:
+            case DOWN:
+                direccion = "S";
+                break;
+            case D:
+            case RIGHT:
+                direccion = "D";
+                break;
+            default:
+                return;
         }
 
         procesandoTurno = true;
-        
+
         try {
             // Ejecutar la acción del protagonista y todos los turnos subsecuentes
             gestorJuego.realizarAccionProtagonista(direccion);
@@ -163,6 +205,10 @@ public class juegoController implements Observer {
         }
     }
 
+    /**
+     * Configura la interfaz de usuario para el fin del juego.
+     * Incluye el panel de resultados y el botón de reinicio.
+     */
     private void configurarFinJuegoUI() {
         endGamePanel.setVisible(false);
         btnReiniciar.setOnAction(e -> {
@@ -173,6 +219,11 @@ public class juegoController implements Observer {
             Platform.runLater(() -> anchorPane.requestFocus()); // Restaurar focus después de reinicio
         });
     }
+
+    /**
+     * Actualiza todos los componentes de la vista.
+     * Se ejecuta en el hilo de JavaFX mediante Platform.runLater().
+     */
 
     private void actualizarVista() {
         Platform.runLater(() -> {
@@ -188,6 +239,10 @@ public class juegoController implements Observer {
         });
     }
 
+    /**
+     * Actualiza las estadísticas del protagonista en la UI.
+     * Muestra salud, ataque, defensa y velocidad.
+     */
     private void actualizarEstadisticas() {
         Protagonista prota = gestorJuego.getProtagonista();
         if (prota != null) {
@@ -195,7 +250,7 @@ public class juegoController implements Observer {
             lblAtaqueProta.setText(String.format("Ataque: %d", prota.getAtaque()));
             lblDefensaProta.setText(String.format("Defensa: %d", prota.getDefensa()));
             lblVelocidadProta.setText(String.format("Velocidad: %d", prota.getVelocidad()));
-            
+
             System.out.println("Estadísticas actualizadas - Salud: " + prota.getSalud() + "/" + prota.getSaludMaxima());
         } else {
             System.err.println("Error: Protagonista es null al actualizar estadísticas");
@@ -204,9 +259,13 @@ public class juegoController implements Observer {
         actualizarEnemigosCercanos();
     }
 
+    /**
+     * Actualiza el panel de enemigos cercanos.
+     * Muestra información de enemigos a distancia <= 5 del protagonista.
+     */
     private void actualizarEnemigosCercanos() {
         enemiesPanel.getChildren().clear();
-        
+
         Label titulo = new Label("ENEMIGOS CERCANOS");
         titulo.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
         enemiesPanel.getChildren().add(titulo);
@@ -220,8 +279,9 @@ public class juegoController implements Observer {
         int enemigosEncontrados = 0;
 
         for (Enemigo enemigo : gestorJuego.getEnemigos()) {
-            if (enemigo.getSalud() <= 0) continue; // Skip enemigos muertos
-            
+            if (enemigo.getSalud() <= 0)
+                continue; // Skip enemigos muertos
+
             int[] posEnemigo = enemigo.getPosicion();
             int distancia = Math.max(Math.abs(posProta[0] - posEnemigo[0]),
                     Math.abs(posProta[1] - posEnemigo[1]));
@@ -230,7 +290,7 @@ public class juegoController implements Observer {
             if (distancia <= 5) {
                 HBox hbox = new HBox(10);
                 hbox.setStyle("-fx-alignment: center-left;");
-                
+
                 ImageView img = crearImagenPersonaje(enemigo);
                 if (img != null) {
                     img.setFitWidth(20);
@@ -247,7 +307,7 @@ public class juegoController implements Observer {
                 enemigosEncontrados++;
             }
         }
-        
+
         if (enemigosEncontrados == 0) {
             Label noEnemigos = new Label("No hay enemigos cerca");
             noEnemigos.setStyle("-fx-text-fill: gray; -fx-font-style: italic;");
@@ -255,12 +315,16 @@ public class juegoController implements Observer {
         }
     }
 
+    /**
+     * Carga y muestra el escenario del juego en el GridPane.
+     * Configura las dimensiones y añade las imágenes de paredes y suelo.
+     */
     private void cargarEscenario() {
         try {
             gridPane.getChildren().clear();
             gridPane.getRowConstraints().clear();
             gridPane.getColumnConstraints().clear();
-            
+
             String[][] escenario = gestorJuego.getEscenario().getEscenario();
 
             // Configurar constraints para el GridPane del escenario
@@ -279,7 +343,7 @@ public class juegoController implements Observer {
             // Configurar constraints para el GridPane de personajes (debe coincidir)
             gridPane2.getRowConstraints().clear();
             gridPane2.getColumnConstraints().clear();
-            
+
             for (int i = 0; i < escenario.length; i++) {
                 RowConstraints rc = new RowConstraints(40);
                 rc.setValignment(VPos.CENTER);
@@ -299,9 +363,8 @@ public class juegoController implements Observer {
                     img.setFitWidth(40);
                     img.setFitHeight(40);
 
-                    String ruta = escenario[i][j].equals("P") ? 
-                            gestorJuego.getEscenario().getPared() : 
-                            gestorJuego.getEscenario().getSuelo();
+                    String ruta = escenario[i][j].equals("P") ? gestorJuego.getEscenario().getPared()
+                            : gestorJuego.getEscenario().getSuelo();
 
                     try {
                         InputStream is = getClass().getResourceAsStream(ruta);
@@ -310,7 +373,8 @@ public class juegoController implements Observer {
                         } else {
                             System.err.println("Imagen no encontrada: " + ruta);
                             // Crear imagen de placeholder si no se encuentra
-                            img.setStyle("-fx-background-color: " + (escenario[i][j].equals("P") ? "brown" : "lightgray"));
+                            img.setStyle(
+                                    "-fx-background-color: " + (escenario[i][j].equals("P") ? "brown" : "lightgray"));
                         }
                     } catch (Exception e) {
                         System.err.println("Error cargando imagen: " + e.getMessage());
@@ -320,7 +384,7 @@ public class juegoController implements Observer {
                     gridPane.add(img, j, i);
                 }
             }
-            
+
             System.out.println("Escenario cargado: " + escenario.length + "x" + escenario[0].length);
         } catch (Exception e) {
             System.err.println("Error cargando escenario: " + e.getMessage());
@@ -328,6 +392,10 @@ public class juegoController implements Observer {
         }
     }
 
+    /**
+     * Dibuja todos los personajes (protagonista y enemigos) en el GridPane.
+     * Solo muestra personajes con salud > 0.
+     */
     private void pintarPersonajes() {
         try {
             gridPane2.getChildren().clear();
@@ -341,26 +409,29 @@ public class juegoController implements Observer {
                 ImageView imgProta = crearImagenPersonaje(prota);
                 if (imgProta != null) {
                     int[] pos = prota.getPosicion();
-                    
+
                     // Verificar que la posición esté dentro de los límites
                     if (pos[0] >= 0 && pos[0] < gridPane2.getRowConstraints().size() &&
-                        pos[1] >= 0 && pos[1] < gridPane2.getColumnConstraints().size()) {
-                        
+                            pos[1] >= 0 && pos[1] < gridPane2.getColumnConstraints().size()) {
+
                         // Verificar que no sea una pared
                         String[][] escenario = gestorJuego.getEscenario().getEscenario();
                         if (!escenario[pos[0]][pos[1]].equals("P")) {
                             gridPane2.add(imgProta, pos[1], pos[0]);
                             System.out.println("Protagonista pintado en: [" + pos[0] + "," + pos[1] + "]");
                         } else {
-                            System.err.println("ERROR: Protagonista en posición de pared [" + pos[0] + "," + pos[1] + "]");
+                            System.err.println(
+                                    "ERROR: Protagonista en posición de pared [" + pos[0] + "," + pos[1] + "]");
                             // Reposicionar el protagonista
                             validarPosicionProtagonista();
                             pos = prota.getPosicion();
                             gridPane2.add(imgProta, pos[1], pos[0]);
-                            System.out.println("Protagonista reposicionado y pintado en: [" + pos[0] + "," + pos[1] + "]");
+                            System.out.println(
+                                    "Protagonista reposicionado y pintado en: [" + pos[0] + "," + pos[1] + "]");
                         }
                     } else {
-                        System.err.println("Posición del protagonista fuera de límites: [" + pos[0] + "," + pos[1] + "]");
+                        System.err
+                                .println("Posición del protagonista fuera de límites: [" + pos[0] + "," + pos[1] + "]");
                     }
                 }
             }
@@ -372,21 +443,21 @@ public class juegoController implements Observer {
                     ImageView imgEnemigo = crearImagenPersonaje(enemigo);
                     if (imgEnemigo != null) {
                         int[] pos = enemigo.getPosicion();
-                        
+
                         // Verificar que la posición esté dentro de los límites
                         if (pos[0] >= 0 && pos[0] < gridPane2.getRowConstraints().size() &&
-                            pos[1] >= 0 && pos[1] < gridPane2.getColumnConstraints().size()) {
-                            
+                                pos[1] >= 0 && pos[1] < gridPane2.getColumnConstraints().size()) {
+
                             gridPane2.add(imgEnemigo, pos[1], pos[0]);
                             enemigosVivos++;
                         } else {
-                            System.err.println("Posición del enemigo " + enemigo.getId() + 
-                                             " fuera de límites: [" + pos[0] + "," + pos[1] + "]");
+                            System.err.println("Posición del enemigo " + enemigo.getId() +
+                                    " fuera de límites: [" + pos[0] + "," + pos[1] + "]");
                         }
                     }
                 }
             }
-            
+
             System.out.println("Personajes pintados - Enemigos vivos: " + enemigosVivos);
         } catch (Exception e) {
             System.err.println("Error pintando personajes: " + e.getMessage());
@@ -394,11 +465,18 @@ public class juegoController implements Observer {
         }
     }
 
+    /**
+     * Crea un ImageView para representar visualmente un personaje.
+     * 
+     * @param personaje Personaje a representar (Protagonista o Enemigo)
+     * @return ImageView con la imagen del personaje o un placeholder si falla la
+     *         carga
+     */
     private ImageView crearImagenPersonaje(Personaje personaje) {
         try {
             String rutaImagen = personaje.getImagen();
             InputStream is = getClass().getResourceAsStream(rutaImagen);
-            
+
             if (is == null) {
                 System.err.println("Imagen no encontrada: " + rutaImagen);
                 return crearImagenPlaceholder(personaje);
@@ -409,7 +487,7 @@ public class juegoController implements Observer {
             img.setFitHeight(40);
             img.setPreserveRatio(true);
             img.setSmooth(true);
-            
+
             return img;
         } catch (Exception e) {
             System.err.println("Error cargando imagen de personaje: " + e.getMessage());
@@ -417,32 +495,47 @@ public class juegoController implements Observer {
         }
     }
 
+    /**
+     * Crea un ImageView de reemplazo cuando falla la carga de la imagen original.
+     * 
+     * @param personaje Personaje a representar
+     * @return ImageView con un placeholder coloreado según el tipo de personaje
+     */
     private ImageView crearImagenPlaceholder(Personaje personaje) {
         ImageView img = new ImageView();
         img.setFitWidth(40);
         img.setFitHeight(40);
-        
+
         // Crear un placeholder visual simple
         String color = personaje instanceof Protagonista ? "blue" : "red";
         img.setStyle("-fx-background-color: " + color + "; -fx-border-color: black; -fx-border-width: 1;");
-        
+
         return img;
     }
 
+    /**
+     * Verifica el estado del juego y muestra el panel de fin de juego si
+     * corresponde.
+     * Muestra mensaje de victoria o derrota según el resultado.
+     */
     private void checkFinJuego() {
         if (!gestorJuego.isJuegoActivo()) {
             endGamePanel.setVisible(true);
             lblResultado.setText(gestorJuego.isVictoria() ? "¡Has ganado!" : "¡Has perdido!");
-            lblResultado.setStyle(gestorJuego.isVictoria() ? 
-                "-fx-text-fill: green; -fx-font-size: 18px; -fx-font-weight: bold;" :
-                "-fx-text-fill: red; -fx-font-size: 18px; -fx-font-weight: bold;");
-            
+            lblResultado.setStyle(
+                    gestorJuego.isVictoria() ? "-fx-text-fill: green; -fx-font-size: 18px; -fx-font-weight: bold;"
+                            : "-fx-text-fill: red; -fx-font-size: 18px; -fx-font-weight: bold;");
+
             System.out.println("Fin del juego detectado: " + (gestorJuego.isVictoria() ? "Victoria" : "Derrota"));
         } else {
             endGamePanel.setVisible(false);
         }
     }
 
+    /**
+     * Método callback del patrón Observer.
+     * Se ejecuta cuando el modelo notifica cambios y actualiza la vista.
+     */
     @Override
     public void onChange() {
         System.out.println("Observer notificado - Actualizando vista");

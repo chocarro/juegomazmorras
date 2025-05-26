@@ -1,5 +1,9 @@
 package com.mazmorras.model;
-
+/**
+ * Clase abstracta que representa a un personaje dentro del juego, ya sea un protagonista o un enemigo.
+ * Incluye atributos comunes como salud, ataque, defensa, posición, entre otros.
+ * Implementa {@code Comparable} para permitir la comparación por velocidad.
+ */
 public abstract class Personaje implements Comparable{
     protected String imagen;
     protected int id;
@@ -11,6 +15,17 @@ public abstract class Personaje implements Comparable{
     protected int[] posicion;
     protected int porcentajeCritico = 10; // Valor por defecto
 
+    /**
+     * Constructor base para instanciar un personaje.
+     *
+     * @param imagen        Ruta de la imagen del personaje.
+     * @param id            Identificador único del personaje.
+     * @param salud         Salud inicial del personaje.
+     * @param ataque        Valor de ataque del personaje.
+     * @param defensa       Valor de defensa del personaje.
+     * @param velocidad     Velocidad del personaje.
+     * @param saludMaxima   Salud máxima que puede alcanzar.
+     */
     public Personaje(String imagen, int id, int salud, int ataque, int defensa, int velocidad, int saludMaxima) {
         this.imagen = imagen;
         this.id = id;
@@ -43,8 +58,13 @@ public abstract class Personaje implements Comparable{
         return this.salud;
     }
 
+    /**
+     * Establece la salud actual del personaje, evitando que sea menor a cero.
+     *
+     * @param salud Nueva salud a establecer.
+     */
     public void setSalud(int salud) {
-        this.salud = Math.max(0, salud); // No permitir salud negativa
+        this.salud = Math.max(0, salud); 
     }
 
     public int getAtaque() {
@@ -98,7 +118,10 @@ public abstract class Personaje implements Comparable{
     // METODOS 
 
     /**
-     * Método simplificado para recibir daño
+     * Aplica daño al personaje, reduciendo su salud.
+     * Si la salud llega a cero, se considera que el personaje ha muerto.
+     *
+     * @param cantidad Cantidad de daño a recibir.
      */
     public void recibirDanio(int cantidad) {
         int saludAnterior = this.salud;
@@ -112,7 +135,12 @@ public abstract class Personaje implements Comparable{
     }
 
     /**
-     * Método para comprobar qué acción puede realizar el personaje
+     * Determina la acción que puede realizar el personaje en base a su posición actual
+     * y el movimiento solicitado.
+     *
+     * @param posicionActual Posición actual del personaje.
+     * @param movimiento     Movimiento solicitado (W, A, S, D).
+     * @return {@code "mover"}, {@code "atacar"} o {@code "bloqueado"} según la lógica del escenario.
      */
     public String comprobarAccion(int[] posicionActual, String movimiento) {
         GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
@@ -170,6 +198,14 @@ public abstract class Personaje implements Comparable{
         return "bloqueado";
     }
 
+    /**
+     * Compara la velocidad entre dos personajes.
+     * Se ordenan en orden descendente de velocidad.
+     *
+     * @param o Otro objeto de tipo {@code Personaje}.
+     * @return Valor negativo si este personaje es más rápido, 0 si igual, positivo si es más lento.
+     */
+
     @Override
     public int compareTo(Object o) {
         if (!(o instanceof Personaje)) {
@@ -179,6 +215,11 @@ public abstract class Personaje implements Comparable{
         return Integer.compare(otro.velocidad, this.velocidad);
     }
 
+    /**
+     * Devuelve una representación en texto del personaje.
+     *
+     * @return Cadena con los atributos principales del personaje.
+     */
     @Override
     public String toString() {
         return "{" +

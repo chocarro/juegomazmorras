@@ -8,10 +8,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Clase encargada de leer los datos de enemigos desde un archivo CSV
+ * y construir una lista de objetos {@link Enemigo}.
+ * También gestiona las rutas de imagen asociadas a cada tipo de enemigo.
+ */
 public class LectorEnemigo {
     private ArrayList<Personaje> oponente;
     private HashMap<String, String> imagenes;
 
+    /**
+     * Constructor que inicializa las listas de oponentes y las rutas de imágenes.
+     */
     public LectorEnemigo() {
         this.oponente = new ArrayList<>();
         this.imagenes = new HashMap<>();
@@ -20,6 +28,15 @@ public class LectorEnemigo {
 
     }
 
+    /**
+     * Lee los datos de enemigos desde el archivo `enemigos.csv` ubicado en los
+     * recursos,
+     * parsea cada línea y crea objetos {@link Enemigo} que se agregan a la lista de
+     * oponentes.
+     *
+     * @return Lista de enemigos leídos desde el archivo.
+     * @throws Exception si el archivo está vacío o no puede leerse correctamente.
+     */
     public ArrayList<Personaje> leerCSV() throws Exception {
         this.oponente.clear();
 
@@ -55,18 +72,38 @@ public class LectorEnemigo {
         return this.oponente;
     }
 
+    /**
+     * Obtiene la lista de personajes enemigos.
+     *
+     * @return Lista de oponentes.
+     */
     public ArrayList<Personaje> getOponente() {
         return this.oponente;
     }
 
+    /**
+     * Establece la lista de personajes enemigos.
+     *
+     * @param oponente Lista nueva de oponentes.
+     */
     public void setOponente(ArrayList<Personaje> oponente) {
         this.oponente = oponente;
     }
 
+    /**
+     * Obtiene el mapa de tipos de enemigo a rutas de imágenes.
+     *
+     * @return Mapa de imágenes.
+     */
     public HashMap<String, String> getImagenes() {
         return this.imagenes;
     }
 
+    /**
+     * Establece el mapa de rutas de imágenes.
+     *
+     * @param imagenes Mapa nuevo de imágenes.
+     */
     public void setImagenes(HashMap<String, String> imagenes) {
         this.imagenes = imagenes;
     }
