@@ -6,18 +6,19 @@ import java.util.Random;
 
 public class Enemigo extends Personaje {
     private int percepcion;
-      private int posX;  
+    private int posX;
     private int posY;
 
-    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad,int saludMaxima, int posX, int posY) {
-        super( imagen,  id,  salud,  ataque,  defensa,  velocidad, saludMaxima);
+    public Enemigo(int percepcion, String imagen, int id, int salud, int ataque, int defensa, int velocidad,
+            int saludMaxima, int posX, int posY) {
+        super(imagen, id, salud, ataque, defensa, velocidad, saludMaxima);
         this.percepcion = percepcion;
-         this.posX = posX;
+        this.posX = posX;
         this.posY = posY;
     }
 
     // Getters y Setters
-  public int getPosX() {
+    public int getPosX() {
         return posX;
     }
 
@@ -43,13 +44,15 @@ public class Enemigo extends Personaje {
 
     // METODOS
 
-    public static void accion(Enemigo enemigo) {
+    /**
+     * Método simplificado - ya no maneja directamente el escenario
+     * El GestorJuego se encarga de coordinar las acciones
+     */
+    public String decidirAccion() {
         GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
-        String[][] escenario = gestor.getEscenario().getEscenario();
         Protagonista prota = gestor.buscarProta();
-        Random rand = new Random();
-
-        int[] posEnemigo = enemigo.getPosicion();
+        
+        int[] posEnemigo = this.getPosicion();
         int[] posProta = prota.getPosicion();
 
         // Calcular distancia al protagonista
@@ -57,46 +60,29 @@ public class Enemigo extends Personaje {
         int distanciaY = Math.abs(posEnemigo[1] - posProta[1]);
 
         // Si el prota está dentro del rango de percepción
-        if (distanciaX <= enemigo.getPercepcion() && distanciaY <= enemigo.getPercepcion()) {
+        if (distanciaX <= this.getPercepcion() && distanciaY <= this.getPercepcion()) {
             // Intenta moverse hacia el prota o atacar
-            String direccion = obtenerDireccionHaciaProta(posEnemigo, posProta);
-            String accion = enemigo.comprobarAccion(posEnemigo, direccion);
-
-            if (accion.equals("atacar")) {
-                enemigo.atacar(
-                        posEnemigo[0] + (direccion.equals("S") ? 1 : direccion.equals("W") ? -1 : 0),
-                        posEnemigo[1] + (direccion.equals("D") ? 1 : direccion.equals("A") ? -1 : 0),
-                        escenario);
-            } else if (accion.equals("mover")) {
-                enemigo.mover(
-                        posEnemigo[0] + (direccion.equals("S") ? 1 : direccion.equals("W") ? -1 : 0),
-                        posEnemigo[1] + (direccion.equals("D") ? 1 : direccion.equals("A") ? -1 : 0),
-                        escenario);
-            }
+            return obtenerDireccionHaciaProta(posEnemigo, posProta);
         } else {
-
             // Movimiento aleatorio
             ArrayList<String> direcciones = new ArrayList<>(Arrays.asList("W", "A", "S", "D"));
-            boolean accionRealizada = false;
-
-            while (!accionRealizada && !direcciones.isEmpty()) {
+            Random rand = new Random();
+            
+            // Intentar encontrar una dirección válida para moverse
+            while (!direcciones.isEmpty()) {
                 String direccion = direcciones.remove(rand.nextInt(direcciones.size()));
-                String accion = enemigo.comprobarAccion(posEnemigo, direccion);
-
+                String accion = this.comprobarAccion(posEnemigo, direccion);
+                
                 if (accion.equals("mover")) {
-                    enemigo.mover(
-                            posEnemigo[0] + (direccion.equals("S") ? 1 : direccion.equals("W") ? -1 : 0),
-                            posEnemigo[1] + (direccion.equals("D") ? 1 : direccion.equals("A") ? -1 : 0),
-                            escenario);
-                    accionRealizada = true;
+                    return direccion;
                 }
             }
+            
+            return ""; // No puede moverse
         }
-        gestor.notifyObservers();
     }
 
     // Método auxiliar para obtener la dirección hacia el protagonista
-
     private static String obtenerDireccionHaciaProta(int[] posEnemigo, int[] posProta) {
         int diffX = posProta[0] - posEnemigo[0];
         int diffY = posProta[1] - posEnemigo[1];
@@ -107,10 +93,32 @@ public class Enemigo extends Personaje {
             return diffY > 0 ? "D" : "A";
         }
     }
+    
+    /**
+     * Método para recibir daño - sobrescribe el de la clase padre
+     */
+    @Override
+    public void recibirDanio(int cantidad) {
+        int saludAnterior = this.salud;
+        setSalud(this.salud - cantidad);
+        System.out.println("Enemigo ID " + this.id + " recibe " + cantidad + 
+                          " de daño. Salud: " + saludAnterior + " -> " + this.salud);
+        
+        if (this.salud <= 0) {
+            System.out.println("Enemigo ID " + this.id + " ha muerto!");
+        }
+    }
 
     @Override
     public String toString() {
-        return "{" + super.toString() + this.percepcion +
+        return "Enemigo{" + 
+                "id=" + getId() + 
+                ", salud=" + getSalud() + "/" + getSaludMaxima() +
+                ", ataque=" + getAtaque() + 
+                ", defensa=" + getDefensa() + 
+                ", velocidad=" + getVelocidad() + 
+                ", percepcion=" + this.percepcion +
+                ", posicion=" + java.util.Arrays.toString(getPosicion()) + 
                 "}";
     }
 }

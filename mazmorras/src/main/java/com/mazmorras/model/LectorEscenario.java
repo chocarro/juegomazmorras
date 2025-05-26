@@ -1,7 +1,6 @@
 package com.mazmorras.model;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -31,8 +30,7 @@ public class LectorEscenario {
         
         LinkedList<String[]> filas = new LinkedList<>();
 
-        try (BufferedReader br = new BufferedReader(
-                new FileReader("mazmorras/src/main/resources/mazmorras/data/escenario.csv"))) {
+        try (BufferedReader br = new BufferedReader(new java.io.InputStreamReader(is))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.trim().split(",");

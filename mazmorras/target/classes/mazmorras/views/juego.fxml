@@ -8,15 +8,33 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="anchorPane" xmlns="http://javafx.com/javafx/23.0.1"
    xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mazmorras.controllers.juegoController">
    <children>
       <Pane prefHeight="610.0" prefWidth="820.0" />
+      
+      <!-- Panel de estadísticas del protagonista -->
+      <VBox fx:id="statsPanel" alignment="TOP_LEFT" spacing="10" style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 10;"
+            AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0">
+         <Label text="ESTADÍSTICAS" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+         <Label fx:id="lblSaludProta" style="-fx-text-fill: white;"/>
+         <Label fx:id="lblAtaqueProta" style="-fx-text-fill: white;"/>
+         <Label fx:id="lblDefensaProta" style="-fx-text-fill: white;"/>
+         <Label fx:id="lblVelocidadProta" style="-fx-text-fill: white;"/>
+      </VBox>
+      
+      <!-- Panel de información de enemigos cercanos -->
+      <VBox fx:id="enemiesPanel" alignment="TOP_RIGHT" spacing="10" style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 10;"
+            AnchorPane.topAnchor="10.0" AnchorPane.rightAnchor="10.0">
+         <Label text="ENEMIGOS CERCANOS" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+      </VBox>
+
       <GridPane fx:id="gridPane" alignment="CENTER" prefHeight="400.0" prefWidth="400.0"
          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
          AnchorPane.topAnchor="0.0">
@@ -38,9 +56,15 @@
             <RowConstraints />
          </rowConstraints>
       </GridPane>
-      <VBox fx:id="endGamePanel" visible="false">
-         <Label fx:id="lblResultado" style="-fx-font-size: 24px;" />
-         <Button fx:id="btnReiniciar" text="Reiniciar Juego" />
-      </VBox>
+      
+  <VBox fx:id="endGamePanel" alignment="CENTER" spacing="20" 
+      style="-fx-background-color: rgba(0,0,0,0.8); -fx-padding: 30;"
+      visible="false" 
+      AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" 
+      AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
+   <Label fx:id="lblResultado" style="-fx-font-size: 24px;" />
+   <Button fx:id="btnReiniciar" text="Reiniciar Juego" 
+           style="-fx-font-size: 16px; -fx-padding: 10 20 10 20;"/>
+</VBox>
    </children>
 </AnchorPane>

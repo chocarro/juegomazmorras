@@ -125,8 +125,8 @@ Protagonista prota = new Protagonista(
     ataque,                                   // Ataque
     defensa,                                  // Defensa
     velocidad,                                // Velocidad
-    10,                                       // Porcentaje crítico (valor ejemplo)
-    salud                                     // Salud máxima (puedes ajustarlo si varía)
+    salud,                                    // Salud máxima (valor corregido para que sea igual a salud)
+    10                                        // Porcentaje crítico (valor ejemplo)
 );
 
 

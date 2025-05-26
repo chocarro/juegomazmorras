@@ -1,7 +1,7 @@
 package com.mazmorras.model;
 
-public abstract class Personaje  implements Comparable{
-    protected  String imagen;
+public abstract class Personaje implements Comparable{
+    protected String imagen;
     protected int id;
     protected int salud;
     protected int ataque;
@@ -9,21 +9,20 @@ public abstract class Personaje  implements Comparable{
     protected int velocidad;
     protected int saludMaxima;
     protected int[] posicion;
+    protected int porcentajeCritico = 10; // Valor por defecto
 
-
-    public Personaje(String imagen, int id, int salud, int ataque, int defensa, int velocidad,int saludMaxima) {
+    public Personaje(String imagen, int id, int salud, int ataque, int defensa, int velocidad, int saludMaxima) {
         this.imagen = imagen;
-        this.id=id;
+        this.id = id;
         this.salud = salud;
         this.ataque = ataque;
         this.defensa = defensa;
         this.velocidad = velocidad;
         this.saludMaxima = saludMaxima;
-        this.posicion= new int[2];
+        this.posicion = new int[2];
     }
 
-      // Getters y Setters 
-
+    // Getters y Setters 
     public int getSaludMaxima() {
         return this.saludMaxima;
     }
@@ -45,7 +44,7 @@ public abstract class Personaje  implements Comparable{
     }
 
     public void setSalud(int salud) {
-        this.salud = salud;
+        this.salud = Math.max(0, salud); // No permitir salud negativa
     }
 
     public int getAtaque() {
@@ -88,25 +87,33 @@ public abstract class Personaje  implements Comparable{
         this.posicion = posicion;
     }
 
-
-      // METODOS 
-
-    public void mover(int nuevaFila, int nuevaCol, String[][] escenario) {
-        GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
-        int[] pos = this.getPosicion();
-        escenario[pos[0]][pos[1]] = "S";
-        this.setPosicion(new int[] { nuevaFila, nuevaCol });
-        escenario[nuevaFila][nuevaCol] = "" + this.id;
-        gestor.notifyObservers();
+    public int getPorcentajeCritico() {
+        return this.porcentajeCritico;
     }
 
-    public void atacar(int nuevaFila, int nuevaCol, String[][] escenario) {
+    public void setPorcentajeCritico(int porcentajeCritico) {
+        this.porcentajeCritico = porcentajeCritico;
     }
 
-    public void danio(int cantidad) {
-        setSalud(getSalud() - cantidad);
+    // METODOS 
+
+    /**
+     * Método simplificado para recibir daño
+     */
+    public void recibirDanio(int cantidad) {
+        int saludAnterior = this.salud;
+        setSalud(this.salud - cantidad);
+        System.out.println(this.getClass().getSimpleName() + " ID " + this.id + 
+                          " recibe " + cantidad + " de daño. Salud: " + saludAnterior + " -> " + this.salud);
+        
+        if (this.salud <= 0) {
+            System.out.println(this.getClass().getSimpleName() + " ID " + this.id + " ha muerto!");
+        }
     }
 
+    /**
+     * Método para comprobar qué acción puede realizar el personaje
+     */
     public String comprobarAccion(int[] posicionActual, String movimiento) {
         GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
         String[][] escenario = gestor.getEscenario().getEscenario();
@@ -140,25 +147,22 @@ public abstract class Personaje  implements Comparable{
 
         String contenidoCelda = escenario[nuevaFila][nuevaColumna];
 
-        // Lógica para protagonista
+        // Si es protagonista
         if (this instanceof Protagonista) {
-            if (contenidoCelda.equals("0")) {
+            if (contenidoCelda.equals("0") || contenidoCelda.equals("S")) {
                 return "mover";
             } else if (contenidoCelda.matches("[1-9]+")) {
                 return "atacar";
             }
         }
-        // Lógica para enemigos
+        // Si es enemigo
         else if (this instanceof Enemigo) {
             Protagonista prota = gestor.buscarProta();
             int[] posProta = prota.getPosicion();
 
-            // Si la celda es el protagonista
             if (nuevaFila == posProta[0] && nuevaColumna == posProta[1]) {
                 return "atacar";
-            }
-            // Si la celda está vacía o es transitable
-            else if (contenidoCelda.equals("0") || contenidoCelda.equals("C")) { // "C" para cofres
+            } else if (contenidoCelda.equals("0") || contenidoCelda.equals("S")) {
                 return "mover";
             }
         }
@@ -175,7 +179,6 @@ public abstract class Personaje  implements Comparable{
         return Integer.compare(otro.velocidad, this.velocidad);
     }
 
-
     @Override
     public String toString() {
         return "{" +
@@ -184,9 +187,7 @@ public abstract class Personaje  implements Comparable{
             ", ataque='" + getAtaque() + "'" +
             ", defensa='" + getDefensa() + "'" +
             ", velocidad='" + getVelocidad() + "'" +
-            ", posicion='" + getPosicion() + "'" +
+            ", posicion='" + java.util.Arrays.toString(getPosicion()) + "'" +
             "}";
     }
-   
-
 }
