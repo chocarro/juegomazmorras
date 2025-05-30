@@ -121,9 +121,13 @@ public class juegoController implements Observer {
                 for (int i = 1; i < escenario.length - 1 && !posicionEncontrada; i++) {
                     for (int j = 1; j < escenario[i].length - 1 && !posicionEncontrada; j++) {
                         if (!escenario[i][j].equals("P")) {
-                            prota.setPosicion(new int[] { i, j });
-                            System.out.println("Protagonista reposicionado a: [" + i + "," + j + "]");
-                            posicionEncontrada = true;
+                            // Verificar que no haya un enemigo en esta posición
+                            Enemigo enemigoEnPosicion = gestorJuego.buscarEnemigoEnPosicion(i, j);
+                            if (enemigoEnPosicion == null) {
+                                prota.setPosicion(new int[] { i, j });
+                                System.out.println("Protagonista reposicionado a: [" + i + "," + j + "]");
+                                posicionEncontrada = true;
+                            }
                         }
                     }
                 }
@@ -229,6 +233,7 @@ public class juegoController implements Observer {
         Platform.runLater(() -> {
             try {
                 actualizarEstadisticas();
+                actualizarEnemigosCercanos(); // Añadir esta línea
                 pintarPersonajes();
                 checkFinJuego();
                 System.out.println("Vista actualizada correctamente");
@@ -250,69 +255,97 @@ public class juegoController implements Observer {
             lblAtaqueProta.setText(String.format("Ataque: %d", prota.getAtaque()));
             lblDefensaProta.setText(String.format("Defensa: %d", prota.getDefensa()));
             lblVelocidadProta.setText(String.format("Velocidad: %d", prota.getVelocidad()));
-
-            System.out.println("Estadísticas actualizadas - Salud: " + prota.getSalud() + "/" + prota.getSaludMaxima());
-        } else {
-            System.err.println("Error: Protagonista es null al actualizar estadísticas");
         }
-
-        actualizarEnemigosCercanos();
     }
 
     /**
      * Actualiza el panel de enemigos cercanos.
      * Muestra información de enemigos a distancia <= 5 del protagonista.
+     * CORREGIDO: Ahora calcula correctamente la distancia y actualiza la
+     * información en tiempo real.
      */
     private void actualizarEnemigosCercanos() {
-        enemiesPanel.getChildren().clear();
+        Platform.runLater(() -> {
+            try {
+                enemiesPanel.getChildren().clear();
 
-        Label titulo = new Label("ENEMIGOS CERCANOS");
-        titulo.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        enemiesPanel.getChildren().add(titulo);
+                Label titulo = new Label("ENEMIGOS CERCANOS");
+                titulo.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 12px;");
+                enemiesPanel.getChildren().add(titulo);
 
-        Protagonista prota = gestorJuego.getProtagonista();
-        if (prota == null) {
-            return;
-        }
-
-        int[] posProta = prota.getPosicion();
-        int enemigosEncontrados = 0;
-
-        for (Enemigo enemigo : gestorJuego.getEnemigos()) {
-            if (enemigo.getSalud() <= 0)
-                continue; // Skip enemigos muertos
-
-            int[] posEnemigo = enemigo.getPosicion();
-            int distancia = Math.max(Math.abs(posProta[0] - posEnemigo[0]),
-                    Math.abs(posProta[1] - posEnemigo[1]));
-
-            // Mostrar enemigos a distancia <= 5
-            if (distancia <= 5) {
-                HBox hbox = new HBox(10);
-                hbox.setStyle("-fx-alignment: center-left;");
-
-                ImageView img = crearImagenPersonaje(enemigo);
-                if (img != null) {
-                    img.setFitWidth(20);
-                    img.setFitHeight(20);
-                    hbox.getChildren().add(img);
+                Protagonista prota = gestorJuego.getProtagonista();
+                if (prota == null) {
+                    Label error = new Label("Error: No se encontró protagonista");
+                    error.setStyle("-fx-text-fill: red; -fx-font-style: italic;");
+                    enemiesPanel.getChildren().add(error);
+                    return;
                 }
 
-                Label lbl = new Label(String.format("ID:%d HP:%d/%d Dist:%d",
-                        enemigo.getId(), enemigo.getSalud(), enemigo.getSaludMaxima(), distancia));
-                lbl.setStyle("-fx-text-fill: white; -fx-font-size: 10px;");
+                int[] posProta = prota.getPosicion();
+                int enemigosEncontrados = 0;
+                java.util.ArrayList<Enemigo> enemigosActuales = gestorJuego.getEnemigos();
 
-                hbox.getChildren().add(lbl);
-                enemiesPanel.getChildren().add(hbox);
-                enemigosEncontrados++;
+                for (Enemigo enemigo : enemigosActuales) {
+                    if (enemigo.getSalud() <= 0)
+                        continue;
+
+                    int[] posEnemigo = enemigo.getPosicion();
+                    int distanciaManhattan = Math.abs(posProta[0] - posEnemigo[0])
+                            + Math.abs(posProta[1] - posEnemigo[1]);
+                    int distanciaChebyshev = Math.max(Math.abs(posProta[0] - posEnemigo[0]),
+                            Math.abs(posProta[1] - posEnemigo[1]));
+
+                    if (distanciaManhattan <= 5) {
+                        HBox hbox = new HBox(5);
+                        hbox.setStyle("-fx-alignment: center-left; -fx-padding: 2;");
+
+                        ImageView img = crearImagenPersonaje(enemigo);
+                        if (img != null) {
+                            img.setFitWidth(16);
+                            img.setFitHeight(16);
+                            hbox.getChildren().add(img);
+                        }
+
+                        boolean esAdyacente = (distanciaChebyshev == 1);
+                        String estadoAdyacente = esAdyacente ? " [PELIGRO!]" : "";
+
+                        Label lbl = new Label(String.format("ID:%d HP:%d/%d Dist:%d%s",
+                                enemigo.getId(), enemigo.getSalud(), enemigo.getSaludMaxima(),
+                                distanciaManhattan, estadoAdyacente));
+
+                        if (esAdyacente) {
+                            lbl.setStyle("-fx-text-fill: #ff6666; -fx-font-size: 10px; -fx-font-weight: bold;");
+                        } else {
+                            lbl.setStyle("-fx-text-fill: white; -fx-font-size: 10px;");
+                        }
+
+                        hbox.getChildren().add(lbl);
+                        enemiesPanel.getChildren().add(hbox);
+                        enemigosEncontrados++;
+                    }
+                }
+
+                if (enemigosEncontrados == 0) {
+                    Label noEnemigos = new Label("No hay enemigos cerca");
+                    noEnemigos.setStyle("-fx-text-fill: gray; -fx-font-style: italic; -fx-font-size: 10px;");
+                    enemiesPanel.getChildren().add(noEnemigos);
+                }
+
+                // Añadir información adicional
+                Label estadoJuego = new Label("Estado: " + gestorJuego.getEstadoJuego());
+                estadoJuego.setStyle("-fx-text-fill: lightgray; -fx-font-size: 9px; -fx-font-style: italic;");
+                enemiesPanel.getChildren().add(estadoJuego);
+
+                long enemigosVivos = enemigosActuales.stream().filter(e -> e.getSalud() > 0).count();
+                Label totalEnemigos = new Label("Enemigos restantes: " + enemigosVivos);
+                totalEnemigos.setStyle("-fx-text-fill: lightblue; -fx-font-size: 9px;");
+                enemiesPanel.getChildren().add(totalEnemigos);
+
+            } catch (Exception e) {
+                System.err.println("Error actualizando enemigos cercanos: " + e.getMessage());
+                e.printStackTrace();
             }
-        }
-
-        if (enemigosEncontrados == 0) {
-            Label noEnemigos = new Label("No hay enemigos cerca");
-            noEnemigos.setStyle("-fx-text-fill: gray; -fx-font-style: italic;");
-            enemiesPanel.getChildren().add(noEnemigos);
-        }
+        });
     }
 
     /**
@@ -395,6 +428,7 @@ public class juegoController implements Observer {
     /**
      * Dibuja todos los personajes (protagonista y enemigos) en el GridPane.
      * Solo muestra personajes con salud > 0.
+     * CORREGIDO: Mejor validación de posiciones y manejo de errores.
      */
     private void pintarPersonajes() {
         try {
@@ -421,24 +455,41 @@ public class juegoController implements Observer {
                             System.out.println("Protagonista pintado en: [" + pos[0] + "," + pos[1] + "]");
                         } else {
                             System.err.println(
-                                    "ERROR: Protagonista en posición de pared [" + pos[0] + "," + pos[1] + "]");
+                                    "ERROR: Protagonista en posición de pared [" + pos[0] + "," + pos[1]
+                                            + "], reposicionando...");
                             // Reposicionar el protagonista
                             validarPosicionProtagonista();
                             pos = prota.getPosicion();
-                            gridPane2.add(imgProta, pos[1], pos[0]);
-                            System.out.println(
-                                    "Protagonista reposicionado y pintado en: [" + pos[0] + "," + pos[1] + "]");
+                            if (pos[0] >= 0 && pos[0] < gridPane2.getRowConstraints().size() &&
+                                    pos[1] >= 0 && pos[1] < gridPane2.getColumnConstraints().size()) {
+                                gridPane2.add(imgProta, pos[1], pos[0]);
+                                System.out.println(
+                                        "Protagonista reposicionado y pintado en: [" + pos[0] + "," + pos[1] + "]");
+                            }
                         }
                     } else {
                         System.err
-                                .println("Posición del protagonista fuera de límites: [" + pos[0] + "," + pos[1] + "]");
+                                .println("Posición del protagonista fuera de límites: [" + pos[0] + "," + pos[1]
+                                        + "], reposicionando...");
+                        validarPosicionProtagonista();
+                        pos = prota.getPosicion();
+                        if (pos[0] >= 0 && pos[0] < gridPane2.getRowConstraints().size() &&
+                                pos[1] >= 0 && pos[1] < gridPane2.getColumnConstraints().size()) {
+                            gridPane2.add(imgProta, pos[1], pos[0]);
+                            System.out.println("Protagonista reposicionado después de estar fuera de límites: ["
+                                    + pos[0] + "," + pos[1] + "]");
+                        }
                     }
                 }
+            } else if (prota != null) {
+                System.out.println("Protagonista está muerto, no se pinta");
             }
 
             // Pintar enemigos vivos
             int enemigosVivos = 0;
-            for (Enemigo enemigo : gestorJuego.getEnemigos()) {
+            java.util.ArrayList<Enemigo> enemigosActuales = gestorJuego.getEnemigos();
+
+            for (Enemigo enemigo : enemigosActuales) {
                 if (enemigo.getSalud() > 0) {
                     ImageView imgEnemigo = crearImagenPersonaje(enemigo);
                     if (imgEnemigo != null) {
@@ -450,15 +501,20 @@ public class juegoController implements Observer {
 
                             gridPane2.add(imgEnemigo, pos[1], pos[0]);
                             enemigosVivos++;
+                            System.out.println(
+                                    "Enemigo ID " + enemigo.getId() + " pintado en: [" + pos[0] + "," + pos[1] + "]");
                         } else {
                             System.err.println("Posición del enemigo " + enemigo.getId() +
                                     " fuera de límites: [" + pos[0] + "," + pos[1] + "]");
                         }
                     }
+                } else {
+                    System.out.println("Enemigo ID " + enemigo.getId() + " está muerto, no se pinta");
                 }
             }
 
-            System.out.println("Personajes pintados - Enemigos vivos: " + enemigosVivos);
+            System.out.println("Personajes pintados - Enemigos vivos: " + enemigosVivos + " de "
+                    + enemigosActuales.size() + " totales");
         } catch (Exception e) {
             System.err.println("Error pintando personajes: " + e.getMessage());
             e.printStackTrace();
@@ -478,7 +534,8 @@ public class juegoController implements Observer {
             InputStream is = getClass().getResourceAsStream(rutaImagen);
 
             if (is == null) {
-                System.err.println("Imagen no encontrada: " + rutaImagen);
+                System.err.println("Imagen no encontrada: " + rutaImagen + " para " +
+                        (personaje instanceof Protagonista ? "protagonista" : "enemigo ID " + personaje.getId()));
                 return crearImagenPlaceholder(personaje);
             }
 

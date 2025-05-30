@@ -6,6 +6,7 @@ import java.util.function.Consumer;
  * Representa al protagonista del juego. Hereda de {@link Personaje} y añade
  * lógica específica para el control del jugador.
  */
+
 public class Protagonista extends Personaje {
     /**
      * Constructor del protagonista del juego.
@@ -22,6 +23,7 @@ public class Protagonista extends Personaje {
      * @param saludMaxima       Salud máxima alcanzable.
      * @param porcentajeCritico Probabilidad de golpe crítico (en porcentaje).
      */
+
     public Protagonista(String nombre, String imagen, int id, int salud, int ataque, int defensa, int velocidad,
             int saludMaxima, int porcentajeCritico) {
         super(imagen, id, salud, ataque, defensa, velocidad, saludMaxima);

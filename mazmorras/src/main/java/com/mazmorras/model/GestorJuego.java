@@ -8,12 +8,12 @@ import com.mazmorras.interfaces.Observer;
 
 /**
  * Clase encargada de gestionar el flujo del juego, incluyendo la lógica de
- * turnos,
- * la interacción entre el protagonista y los enemigos, y el estado del
+ * turnos,la interacción entre el protagonista y los enemigos, y el estado del
  * escenario.
  * También implementa el patrón Observador para actualizar vistas u otras capas
  * interesadas.
  */
+
 public class GestorJuego {
     private static GestorJuego instance;
     private Escenario escenario;
@@ -156,11 +156,18 @@ public class GestorJuego {
                 return;
             }
 
-            // 4. Turno de enemigos (ordenados por velocidad)
-            turnoEnemigos();
+            // 4. Solo ejecutar turno de enemigos si el protagonista ATACÓ, no si se movió
+            // Esto evita que los enemigos ataquen inmediatamente después de cada movimiento
+            String accion = getAccionParaDireccion(direccion);
+            if (accion != null && accion.equals("atacar")) {
+                System.out.println("Protagonista atacó, ejecutando turno de enemigos");
+                turnoEnemigos();
 
-            // 5. Verificar estado del juego después del turno de enemigos
-            verificarEstadoJuego();
+                // 5. Verificar estado del juego después del turno de enemigos
+                verificarEstadoJuego();
+            } else {
+                System.out.println("Protagonista se movió, enemigos no actúan este turno");
+            }
         } else {
             System.out.println("El protagonista no pudo realizar la acción: " + direccion);
         }
@@ -170,6 +177,39 @@ public class GestorJuego {
         // 6. Actualizar escenario y notificar cambios finales
         actualizarEscenario();
         notifyObservers();
+    }
+
+    /**
+     * Determina qué acción realizaría el protagonista en una dirección dada
+     * 
+     * @param direccion Dirección a evaluar
+     * @return "mover", "atacar" o null si es inválida
+     */
+    private String getAccionParaDireccion(String direccion) {
+        int[] posActual = protagonista.getPosicion();
+
+        int nuevaFila = posActual[0];
+        int nuevaCol = posActual[1];
+
+        // Calcular nueva posición
+        switch (direccion.toUpperCase()) {
+            case "W":
+                nuevaFila--;
+                break;
+            case "A":
+                nuevaCol--;
+                break;
+            case "S":
+                nuevaFila++;
+                break;
+            case "D":
+                nuevaCol++;
+                break;
+            default:
+                return null;
+        }
+
+        return protagonista.comprobarAccion(posActual, direccion);
     }
 
     /**
@@ -225,6 +265,23 @@ public class GestorJuego {
      * @return true si el movimiento fue exitoso
      */
     private boolean moverProtagonista(int nuevaFila, int nuevaCol) {
+        // Verificar que la nueva posición sea válida (dentro de límites y no sea pared)
+        String[][] escenario = this.escenario.getEscenario();
+
+        if (nuevaFila < 0 || nuevaFila >= escenario.length ||
+                nuevaCol < 0 || nuevaCol >= escenario[0].length ||
+                escenario[nuevaFila][nuevaCol].equals("P")) {
+            System.out.println("Movimiento inválido a [" + nuevaFila + "," + nuevaCol + "]");
+            return false;
+        }
+
+        // Verificar que no haya un enemigo en la posición destino
+        Enemigo enemigoEnDestino = buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
+        if (enemigoEnDestino != null) {
+            System.out.println("No se puede mover a [" + nuevaFila + "," + nuevaCol + "] - hay un enemigo");
+            return false;
+        }
+
         // Actualizar posición del protagonista
         protagonista.setPosicion(new int[] { nuevaFila, nuevaCol });
 
@@ -264,13 +321,20 @@ public class GestorJuego {
             return;
         }
 
-        // Crear lista de enemigos ordenada por velocidad (mayor velocidad primero)
-        ArrayList<Enemigo> enemigosOrdenados = new ArrayList<>(enemigos);
-        enemigosOrdenados.sort((e1, e2) -> Integer.compare(e2.getVelocidad(), e1.getVelocidad()));
+        // Crear lista de enemigos vivos ordenada por velocidad (mayor velocidad
+        // primero)
+        ArrayList<Enemigo> enemigosVivos = new ArrayList<>();
+        for (Enemigo enemigo : enemigos) {
+            if (enemigo.getSalud() > 0) {
+                enemigosVivos.add(enemigo);
+            }
+        }
 
-        System.out.println("Procesando turno de " + enemigosOrdenados.size() + " enemigos");
+        enemigosVivos.sort((e1, e2) -> Integer.compare(e2.getVelocidad(), e1.getVelocidad()));
 
-        for (Enemigo enemigo : enemigosOrdenados) {
+        System.out.println("Procesando turno de " + enemigosVivos.size() + " enemigos vivos");
+
+        for (Enemigo enemigo : enemigosVivos) {
             if (enemigo.getSalud() > 0 && juegoActivo) {
                 System.out.println("Turno del enemigo ID " + enemigo.getId());
 
@@ -290,7 +354,7 @@ public class GestorJuego {
                         break;
                     }
                 } else {
-                    // Intentar moverse
+                    // Intentar moverse hacia el protagonista
                     String direccion = enemigo.decidirAccion();
                     if (!direccion.isEmpty()) {
                         moverEnemigo(enemigo, direccion);
@@ -332,11 +396,27 @@ public class GestorJuego {
                     break;
             }
 
-            // Actualizar posición del enemigo
-            enemigo.setPosicion(new int[] { nuevaFila, nuevaCol });
+            // Verificar que la nueva posición sea válida
+            String[][] escenario = this.escenario.getEscenario();
 
-            System.out.println("Enemigo ID " + enemigo.getId() + " movido de " +
-                    Arrays.toString(posActual) + " a [" + nuevaFila + "," + nuevaCol + "]");
+            if (nuevaFila >= 0 && nuevaFila < escenario.length &&
+                    nuevaCol >= 0 && nuevaCol < escenario[0].length &&
+                    !escenario[nuevaFila][nuevaCol].equals("P")) {
+
+                // Verificar que no haya otro enemigo en esa posición
+                Enemigo otroEnemigo = buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
+                if (otroEnemigo == null) {
+                    // Actualizar posición del enemigo
+                    enemigo.setPosicion(new int[] { nuevaFila, nuevaCol });
+
+                    System.out.println("Enemigo ID " + enemigo.getId() + " movido de " +
+                            Arrays.toString(posActual) + " a [" + nuevaFila + "," + nuevaCol + "]");
+                } else {
+                    System.out.println("Enemigo ID " + enemigo.getId() + " no puede moverse - posición ocupada");
+                }
+            } else {
+                System.out.println("Enemigo ID " + enemigo.getId() + " no puede moverse - posición inválida");
+            }
         }
     }
 
@@ -353,8 +433,10 @@ public class GestorJuego {
         int distanciaFila = Math.abs(posEnemigo[0] - posProta[0]);
         int distanciaCol = Math.abs(posEnemigo[1] - posProta[1]);
 
-        boolean esAdyacente = distanciaFila <= 1 && distanciaCol <= 1 &&
-                (distanciaFila + distanciaCol) > 0;
+        // Un enemigo es adyacente si está a distancia 1 en fila O columna (no diagonal)
+        // Y no están en la misma posición
+        boolean esAdyacente = ((distanciaFila == 1 && distanciaCol == 0) ||
+                (distanciaFila == 0 && distanciaCol == 1));
 
         if (esAdyacente) {
             System.out.println("Enemigo ID " + enemigo.getId() + " es adyacente al protagonista");
@@ -394,12 +476,19 @@ public class GestorJuego {
      */
     private void eliminarEnemigosMuertos() {
         Iterator<Enemigo> iterator = enemigos.iterator();
+        int eliminados = 0;
         while (iterator.hasNext()) {
             Enemigo enemigo = iterator.next();
             if (enemigo.getSalud() <= 0) {
                 iterator.remove();
+                eliminados++;
                 System.out.println("Enemigo ID " + enemigo.getId() + " eliminado (murió)");
             }
+        }
+
+        if (eliminados > 0) {
+            System.out.println(
+                    "Total de enemigos eliminados: " + eliminados + ". Enemigos restantes: " + enemigos.size());
         }
     }
 
@@ -411,7 +500,7 @@ public class GestorJuego {
         if (protagonista.getSalud() <= 0) {
             juegoActivo = false;
             System.out.println("¡DERROTA! El protagonista ha muerto");
-        } else if (enemigos.isEmpty()) {
+        } else if (enemigos.isEmpty() || enemigos.stream().allMatch(e -> e.getSalud() <= 0)) {
             juegoActivo = false;
             System.out.println("¡VICTORIA! Todos los enemigos han sido derrotados");
         }
@@ -423,6 +512,7 @@ public class GestorJuego {
     private void actualizarEscenario() {
         String[][] matriz = this.escenario.getEscenario();
 
+        // Limpiar posiciones no-pared
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
                 if (!matriz[i][j].equals("P")) {
@@ -441,18 +531,20 @@ public class GestorJuego {
         }
 
         // Colocar enemigos vivos
+        int enemigosVivos = 0;
         for (Enemigo enemigo : enemigos) {
             if (enemigo.getSalud() > 0) {
                 int[] pos = enemigo.getPosicion();
                 if (pos[0] >= 0 && pos[0] < matriz.length &&
                         pos[1] >= 0 && pos[1] < matriz[0].length) {
                     matriz[pos[0]][pos[1]] = String.valueOf(enemigo.getId());
+                    enemigosVivos++;
                 }
             }
         }
 
         System.out.println("Escenario actualizado - Protagonista: " + Arrays.toString(protagonista.getPosicion()) +
-                ", Enemigos vivos: " + enemigos.size());
+                ", Enemigos vivos: " + enemigosVivos);
     }
 
     /**
@@ -496,12 +588,24 @@ public class GestorJuego {
         System.out.println("Reiniciando juego...");
         this.escenario = new Escenario();
         this.enemigos.clear();
-        this.protagonista = null;
         this.juegoActivo = true;
 
-        inicializarJuego();
+        // Reiniciar protagonista manteniendo la misma instancia pero resetando valores
+        if (this.protagonista != null) {
+            this.protagonista.setSalud(100);
+            this.protagonista.setSaludMaxima(100);
+            this.protagonista.setAtaque(10);
+            this.protagonista.setDefensa(8);
+            this.protagonista.setVelocidad(9);
+            this.protagonista.setPosicion(new int[] { 1, 1 });
+        } else {
+            inicializarProtagonista();
+        }
+
+        cargarEnemigosIniciales();
+        actualizarEscenario();
         notifyObservers();
-        System.out.println("Juego reiniciado");
+        System.out.println("Juego reiniciado con valores iniciales");
     }
 
     // Getters y Setters

@@ -42,28 +42,52 @@ public class LectorEnemigo {
 
         try (InputStream is = getClass().getResourceAsStream("/mazmorras/data/enemigos.csv");
                 BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
             String linea;
             if ((linea = br.readLine()) == null)
-                throw new Exception("Texto vacío");
+                throw new Exception("Archivo vacío");
+
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(",");
-                String rutaImagen = imagenes.get(datos[1]);
-                this.oponente.add(new Enemigo(
-                        Integer.parseInt(datos[0]), // percepción
-                        rutaImagen, // ruta imagen
-                        Integer.parseInt(datos[2]), // id
-                        Integer.parseInt(datos[3]), // salud
-                        Integer.parseInt(datos[4]), // ataque
-                        Integer.parseInt(datos[5]), // defensa
-                        Integer.parseInt(datos[6]), // velocidad
-                        Integer.parseInt(datos[7]), // saludMaxima
-                        Integer.parseInt(datos[10]), // posX
-                        Integer.parseInt(datos[11]) // posY
-                ));
+                if (datos.length < 10) {
+                    System.err.println("Línea inválida: " + linea);
+                    continue;
+                }
 
+                String rutaImagen = imagenes.get(datos[1].trim());
+                if (rutaImagen == null) {
+                    System.err.println("Tipo de enemigo no reconocido: " + datos[1]);
+                    continue;
+                }
+
+                // Asegurar que saludMaxima sea igual a salud inicial
+                int salud = Integer.parseInt(datos[3].trim());
+                int saludMaxima = Integer.parseInt(datos[7].trim());
+
+                if (saludMaxima != salud) {
+                    System.out.println("Ajustando saludMaxima para que coincida con salud inicial");
+                    saludMaxima = salud;
+                }
+
+                this.oponente.add(new Enemigo(
+                        Integer.parseInt(datos[0].trim()), // percepción
+                        rutaImagen, // ruta imagen
+                        Integer.parseInt(datos[2].trim()), // id
+                        salud, // salud
+                        Integer.parseInt(datos[4].trim()), // ataque
+                        Integer.parseInt(datos[5].trim()), // defensa
+                        Integer.parseInt(datos[6].trim()), // velocidad
+                        saludMaxima, // saludMaxima (igual a salud)
+                        Integer.parseInt(datos[8].trim()), // posX
+                        Integer.parseInt(datos[9].trim()) // posY
+                ));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error leyendo archivo CSV: " + e.getMessage());
+            throw e;
+        } catch (NumberFormatException e) {
+            System.err.println("Error en formato numérico: " + e.getMessage());
+            throw e;
         }
 
         for (Personaje p : oponente) {
