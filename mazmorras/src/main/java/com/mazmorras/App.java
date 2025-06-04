@@ -8,7 +8,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-/**
+/**javadoc -d docs -sourcepath src -subpackages <tu_paquete>
  * La clase <code>App</code> es la aplicación principal que extiende la clase <code>Application</code> de JavaFX.
  * Esta clase es responsable de iniciar la aplicación, configurar la ventana principal (Stage), 
  * establecer el icono de la ventana, y ges
