@@ -3,6 +3,8 @@ package com.mazmorras.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 import com.mazmorras.interfaces.Observer;
 
@@ -264,30 +266,75 @@ public class GestorJuego {
      * @param nuevaCol  Columna destino
      * @return true si el movimiento fue exitoso
      */
-    private boolean moverProtagonista(int nuevaFila, int nuevaCol) {
-        // Verificar que la nueva posición sea válida (dentro de límites y no sea pared)
-        String[][] escenario = this.escenario.getEscenario();
+   private boolean moverProtagonista(int nuevaFila, int nuevaCol) {
+    // Verificar que la nueva posición sea válida
+    String[][] escenario = this.escenario.getEscenario();
+    String contenidoCelda = escenario[nuevaFila][nuevaCol];
 
-        if (nuevaFila < 0 || nuevaFila >= escenario.length ||
-                nuevaCol < 0 || nuevaCol >= escenario[0].length ||
-                escenario[nuevaFila][nuevaCol].equals("P")) {
-            System.out.println("Movimiento inválido a [" + nuevaFila + "," + nuevaCol + "]");
-            return false;
-        }
-
-        // Verificar que no haya un enemigo en la posición destino
-        Enemigo enemigoEnDestino = buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
-        if (enemigoEnDestino != null) {
-            System.out.println("No se puede mover a [" + nuevaFila + "," + nuevaCol + "] - hay un enemigo");
-            return false;
-        }
-
-        // Actualizar posición del protagonista
-        protagonista.setPosicion(new int[] { nuevaFila, nuevaCol });
-
-        System.out.println("Protagonista movido a: [" + nuevaFila + "," + nuevaCol + "]");
-        return true;
+    if (nuevaFila < 0 || nuevaFila >= escenario.length ||
+            nuevaCol < 0 || nuevaCol >= escenario[0].length ||
+            contenidoCelda.equals("P")) {
+        System.out.println("Movimiento inválido a [" + nuevaFila + "," + nuevaCol + "]");
+        return false;
     }
+
+    // Verificar que no haya un enemigo en la posición destino
+    Enemigo enemigoEnDestino = buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
+    if (enemigoEnDestino != null) {
+        System.out.println("No se puede mover a [" + nuevaFila + "," + nuevaCol + "] - hay un enemigo");
+        return false;
+    }
+
+    // Actualizar posición del protagonista
+    protagonista.setPosicion(new int[] { nuevaFila, nuevaCol });
+
+    // Aplicar maldición si es una casilla M
+    if (contenidoCelda.equals("M")) {
+        // Obtener lista de todos los personajes (protagonista + enemigos)
+        List<Personaje> todosPersonajes = new ArrayList<>();
+        todosPersonajes.add(protagonista);
+        todosPersonajes.addAll(enemigos); // asumiendo que tienes una lista de enemigos
+        
+        // Seleccionar un personaje aleatorio
+        Random rand = new Random();
+        Personaje victima = todosPersonajes.get(rand.nextInt(todosPersonajes.size()));
+        
+        // Calcular 25% de la vida actual y máxima
+        int saludActual = victima.getSalud();
+        int saludMaxima = victima.getSaludMaxima();
+        
+        int danioVidaActual = (int) Math.ceil(saludActual * 0.25);
+        int reduccionVidaMaxima = (int) Math.ceil(saludMaxima * 0.25);
+        
+        // Aplicar daño
+        victima.recibirDanio(danioVidaActual);
+        victima.setSaludMaxima(saludMaxima - reduccionVidaMaxima);
+        
+        // Ajustar vida actual si es necesario
+        if (victima.getSalud() > victima.getSaludMaxima()) {
+            victima.setSalud(victima.getSaludMaxima());
+        }
+        
+        System.out.println("¡Maldición aleatoria! " + 
+                         (victima == protagonista ? "Protagonista" : "Enemigo") + 
+                         " pierde " + danioVidaActual + " de vida actual y " + 
+                         reduccionVidaMaxima + " de vida máxima");
+        
+        // Verificar si el protagonista murió
+        if (victima == protagonista && victima.getSalud() <= 0) {
+            juegoActivo = false;
+            System.out.println("¡DERROTA! El protagonista ha muerto por una maldición");
+        }
+        // Verificar si un enemigo murió
+        else if (victima instanceof Enemigo && victima.getSalud() <= 0) {
+            System.out.println("¡Un enemigo ha muerto por la maldición!");
+            enemigos.remove(victima); // Eliminar enemigo muerto
+        }
+    }
+
+    System.out.println("Protagonista movido a: [" + nuevaFila + "," + nuevaCol + "]");
+    return true;
+}
 
     /**
      * Realiza un ataque del protagonista hacia una posición.
@@ -374,51 +421,47 @@ public class GestorJuego {
      * @param direccion Dirección (W, A, S, D)
      */
     private void moverEnemigo(Enemigo enemigo, String direccion) {
-        int[] posActual = enemigo.getPosicion();
-        String accion = enemigo.comprobarAccion(posActual, direccion);
+    int[] posActual = enemigo.getPosicion();
+    String accion = enemigo.comprobarAccion(posActual, direccion);
 
-        if (accion.equals("mover")) {
-            int nuevaFila = posActual[0];
-            int nuevaCol = posActual[1];
+    if (accion.equals("mover")) {
+        int nuevaFila = posActual[0];
+        int nuevaCol = posActual[1];
 
-            switch (direccion.toUpperCase()) {
-                case "W":
-                    nuevaFila--;
-                    break;
-                case "A":
-                    nuevaCol--;
-                    break;
-                case "S":
-                    nuevaFila++;
-                    break;
-                case "D":
-                    nuevaCol++;
-                    break;
-            }
+        switch (direccion.toUpperCase()) {
+            case "W":
+                nuevaFila--;
+                break;
+            case "A":
+                nuevaCol--;
+                break;
+            case "S":
+                nuevaFila++;
+                break;
+            case "D":
+                nuevaCol++;
+                break;
+        }
 
-            // Verificar que la nueva posición sea válida
-            String[][] escenario = this.escenario.getEscenario();
+        // Verificar que la nueva posición sea válida
+        String[][] escenario = this.escenario.getEscenario();
+        String contenidoCelda = escenario[nuevaFila][nuevaCol];
 
-            if (nuevaFila >= 0 && nuevaFila < escenario.length &&
-                    nuevaCol >= 0 && nuevaCol < escenario[0].length &&
-                    !escenario[nuevaFila][nuevaCol].equals("P")) {
+        if (nuevaFila >= 0 && nuevaFila < escenario.length &&
+                nuevaCol >= 0 && nuevaCol < escenario[0].length &&
+                !contenidoCelda.equals("P")) {
 
-                // Verificar que no haya otro enemigo en esa posición
-                Enemigo otroEnemigo = buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
-                if (otroEnemigo == null) {
-                    // Actualizar posición del enemigo
-                    enemigo.setPosicion(new int[] { nuevaFila, nuevaCol });
-
-                    System.out.println("Enemigo ID " + enemigo.getId() + " movido de " +
-                            Arrays.toString(posActual) + " a [" + nuevaFila + "," + nuevaCol + "]");
-                } else {
-                    System.out.println("Enemigo ID " + enemigo.getId() + " no puede moverse - posición ocupada");
-                }
-            } else {
-                System.out.println("Enemigo ID " + enemigo.getId() + " no puede moverse - posición inválida");
+            // Verificar que no haya otro enemigo en esa posición
+            Enemigo otroEnemigo = buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
+            if (otroEnemigo == null) {
+                // Actualizar posición del enemigo
+                enemigo.setPosicion(new int[] { nuevaFila, nuevaCol });
+                System.out.println("Enemigo ID " + enemigo.getId() + " movido de " +
+                        Arrays.toString(posActual) + " a [" + nuevaFila + "," + nuevaCol + "]");
             }
         }
     }
+}
 
     /**
      * Verifica si un enemigo está adyacente al protagonista.
@@ -512,14 +555,14 @@ public class GestorJuego {
     private void actualizarEscenario() {
         String[][] matriz = this.escenario.getEscenario();
 
-        // Limpiar posiciones no-pared
-        for (int i = 0; i < matriz.length; i++) {
-            for (int j = 0; j < matriz[i].length; j++) {
-                if (!matriz[i][j].equals("P")) {
-                    matriz[i][j] = "0"; // Suelo vacío
-                }
+       // Limpiar posiciones no-pared, preservando maldicion
+    for (int i = 0; i < matriz.length; i++) {
+        for (int j = 0; j < matriz[i].length; j++) {
+            if (!matriz[i][j].equals("P") && !matriz[i][j].equals("M")) {
+                matriz[i][j] = "0"; // Suelo vacío
             }
         }
+    }
 
         // Colocar protagonista si está vivo
         if (protagonista.getSalud() > 0) {

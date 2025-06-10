@@ -17,6 +17,9 @@ public class Escenario {
     LectorEscenario lector = new LectorEscenario();
     private final String suelo = "/mazmorras/images/suelo.png";
     private final String pared = "/mazmorras/images/pared.png";
+    private final String maldicion = "/mazmorras/images/Maldicion.png.jpg";
+    
+    
 
     /**
      * Constructor por defecto. Inicializa el lector y carga el escenario desde el
@@ -57,6 +60,10 @@ public class Escenario {
      */
     public String[][] getEscenario() {
         return this.escenario;
+    }
+
+    public String getMaldicion() {
+        return this.maldicion;
     }
 
     /**
@@ -116,6 +123,7 @@ public class Escenario {
      * @return {@code true} si el movimiento fue exitoso; {@code false} si la nueva
      *         posición está ocupada o fuera de límites.
      */
+   
     public boolean moverPersonaje(int viejaFila, int viejaCol, int nuevaFila, int nuevaCol, String idPersonaje) {
         // Validar límites del escenario
         if (nuevaFila < 0 || nuevaFila >= escenario.length ||
@@ -123,8 +131,10 @@ public class Escenario {
             return false;
         }
 
-        // Verificar si la nueva posición está vacía
-        if (escenario[nuevaFila][nuevaCol].equals("0")) {
+        String contenidoCelda = escenario[nuevaFila][nuevaCol];
+        
+        // Permitir movimiento a suelo, salida o maldicion
+        if (contenidoCelda.equals("0") || contenidoCelda.equals("S") || contenidoCelda.equals("M")) {
             // Liberar posición anterior
             escenario[viejaFila][viejaCol] = "0";
             // Ocupar nueva posición

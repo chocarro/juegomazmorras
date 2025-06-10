@@ -143,61 +143,60 @@ public abstract class Personaje implements Comparable{
      * @return {@code "mover"}, {@code "atacar"} o {@code "bloqueado"} según la lógica del escenario.
      */
     public String comprobarAccion(int[] posicionActual, String movimiento) {
-        GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
-        String[][] escenario = gestor.getEscenario().getEscenario();
+    GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
+    String[][] escenario = gestor.getEscenario().getEscenario();
 
-        int nuevaFila = posicionActual[0];
-        int nuevaColumna = posicionActual[1];
+    int nuevaFila = posicionActual[0];
+    int nuevaColumna = posicionActual[1];
 
-        // Calcular nueva posición
-        switch (movimiento.toUpperCase()) {
-            case "W":
-                nuevaFila--;
-                break;
-            case "A":
-                nuevaColumna--;
-                break;
-            case "S":
-                nuevaFila++;
-                break;
-            case "D":
-                nuevaColumna++;
-                break;
-            default:
-                return "bloqueado";
-        }
-
-        // Validar límites del escenario
-        if (nuevaFila < 0 || nuevaFila >= escenario.length ||
-                nuevaColumna < 0 || nuevaColumna >= escenario[0].length) {
+    // Calcular nueva posición
+    switch (movimiento.toUpperCase()) {
+        case "W":
+            nuevaFila--;
+            break;
+        case "A":
+            nuevaColumna--;
+            break;
+        case "S":
+            nuevaFila++;
+            break;
+        case "D":
+            nuevaColumna++;
+            break;
+        default:
             return "bloqueado";
-        }
+    }
 
-        String contenidoCelda = escenario[nuevaFila][nuevaColumna];
-
-        // Si es protagonista
-        if (this instanceof Protagonista) {
-            if (contenidoCelda.equals("0") || contenidoCelda.equals("S")) {
-                return "mover";
-            } else if (contenidoCelda.matches("[1-9]+")) {
-                return "atacar";
-            }
-        }
-        // Si es enemigo
-        else if (this instanceof Enemigo) {
-            Protagonista prota = gestor.buscarProta();
-            int[] posProta = prota.getPosicion();
-
-            if (nuevaFila == posProta[0] && nuevaColumna == posProta[1]) {
-                return "atacar";
-            } else if (contenidoCelda.equals("0") || contenidoCelda.equals("S")) {
-                return "mover";
-            }
-        }
-
+    // Validar límites del escenario
+    if (nuevaFila < 0 || nuevaFila >= escenario.length ||
+            nuevaColumna < 0 || nuevaColumna >= escenario[0].length) {
         return "bloqueado";
     }
 
+    String contenidoCelda = escenario[nuevaFila][nuevaColumna];
+
+    // Si es protagonista
+    if (this instanceof Protagonista) {
+        if (contenidoCelda.equals("0") || contenidoCelda.equals("S") || contenidoCelda.equals("M")) {
+            return "mover";
+        } else if (contenidoCelda.matches("[1-9]+")) {
+            return "atacar";
+        }
+    }
+    // Si es enemigo
+    else if (this instanceof Enemigo) {
+        Protagonista prota = gestor.buscarProta();
+        int[] posProta = prota.getPosicion();
+
+        if (nuevaFila == posProta[0] && nuevaColumna == posProta[1]) {
+            return "atacar";
+        } else if (contenidoCelda.equals("0") || contenidoCelda.equals("S") || contenidoCelda.equals("M")) {
+            return "mover";
+        }
+    }
+
+    return "bloqueado";
+}
     /**
      * Compara la velocidad entre dos personajes.
      * Se ordenan en orden descendente de velocidad.

@@ -390,40 +390,47 @@ public class juegoController implements Observer {
             }
 
             // Cargar imágenes del escenario
-            for (int i = 0; i < escenario.length; i++) {
-                for (int j = 0; j < escenario[i].length; j++) {
-                    ImageView img = new ImageView();
-                    img.setFitWidth(40);
-                    img.setFitHeight(40);
+          for (int i = 0; i < escenario.length; i++) {
+            for (int j = 0; j < escenario[i].length; j++) {
+                ImageView img = new ImageView();
+                img.setFitWidth(40);
+                img.setFitHeight(40);
 
-                    String ruta = escenario[i][j].equals("P") ? gestorJuego.getEscenario().getPared()
-                            : gestorJuego.getEscenario().getSuelo();
-
-                    try {
-                        InputStream is = getClass().getResourceAsStream(ruta);
-                        if (is != null) {
-                            img.setImage(new Image(is));
-                        } else {
-                            System.err.println("Imagen no encontrada: " + ruta);
-                            // Crear imagen de placeholder si no se encuentra
-                            img.setStyle(
-                                    "-fx-background-color: " + (escenario[i][j].equals("P") ? "brown" : "lightgray"));
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Error cargando imagen: " + e.getMessage());
-                        img.setStyle("-fx-background-color: red"); // Color de error
-                    }
-
-                    gridPane.add(img, j, i);
+                String ruta;
+                if (escenario[i][j].equals("P")) {
+                    ruta = gestorJuego.getEscenario().getPared();
+                } else if (escenario[i][j].equals("M")) {
+                    ruta = gestorJuego.getEscenario().getMaldicion();
+                } else {
+                    ruta = gestorJuego.getEscenario().getSuelo();
                 }
+
+                try {
+                    InputStream is = getClass().getResourceAsStream(ruta);
+                    if (is != null) {
+                        img.setImage(new Image(is));
+                    } else {
+                        System.err.println("Imagen no encontrada: " + ruta);
+                        // Crear imagen de placeholder si no se encuentra
+                        img.setStyle("-fx-background-color: " + 
+                            (escenario[i][j].equals("P") ? "brown" : 
+                             escenario[i][j].equals("T") ? "darkred" : "lightgray"));
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error cargando imagen: " + e.getMessage());
+                    img.setStyle("-fx-background-color: red"); // Color de error
+                }
+
+                gridPane.add(img, j, i);
             }
+        }
 
             System.out.println("Escenario cargado: " + escenario.length + "x" + escenario[0].length);
         } catch (Exception e) {
-            System.err.println("Error cargando escenario: " + e.getMessage());
-            e.printStackTrace();
-        }
+        System.err.println("Error cargando escenario: " + e.getMessage());
+        e.printStackTrace();
     }
+}
 
     /**
      * Dibuja todos los personajes (protagonista y enemigos) en el GridPane.

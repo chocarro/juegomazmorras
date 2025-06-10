@@ -1,10 +1,10 @@
 S,S,P,P,P,P,P,P,P,P
-P,S,S,S,S,S,S,S,S,P
-P,S,P,S,P,S,P,S,S,P
-P,S,S,S,S,S,S,S,S,P
+P,S,S,M,S,S,S,S,S,P
+P,S,P,S,P,S,P,M,S,P
+P,S,S,S,S,M,S,S,S,P
 P,S,P,S,P,P,P,S,P,P
 P,S,P,S,S,S,S,S,S,P
 P,S,P,P,P,S,P,P,S,P
-P,S,S,S,S,S,P,S,S,P
+P,S,S,M,S,S,P,S,S,P
 P,S,P,S,P,S,P,S,S,P
 P,P,P,P,P,P,P,P,P,P
