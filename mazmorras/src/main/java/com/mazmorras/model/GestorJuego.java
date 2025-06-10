@@ -259,7 +259,7 @@ public class GestorJuego {
 
     /**
      * Mueve al protagonista a una nueva posición.
-     * 
+     *
      * @param nuevaFila Fila destino
      * @param nuevaCol  Columna destino
      * @return true si el movimiento fue exitoso
@@ -271,20 +271,39 @@ public class GestorJuego {
         if (nuevaFila < 0 || nuevaFila >= escenario.length ||
                 nuevaCol < 0 || nuevaCol >= escenario[0].length ||
                 escenario[nuevaFila][nuevaCol].equals("P")) {
-            System.out.println("Movimiento inválido a [" + nuevaFila + "," + nuevaCol + "]");
+            System.out.println("Movimiento inválido a" + nuevaFila + "," + nuevaCol);
             return false;
+        }
+
+        if (escenario[nuevaFila][nuevaCol].equals("T")) {
+            ArrayList<Personaje> todos = new ArrayList<>();
+
+            todos.add(protagonista);
+            todos.addAll(enemigos);
+
+            if (!todos.isEmpty()) {
+                int elegido = (int) (Math.random() * todos.size());
+                todos.get(elegido).aplicarMaldicion();
+            }
         }
 
         // Verificar que no haya un enemigo en la posición destino
         Enemigo enemigoEnDestino = buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
         if (enemigoEnDestino != null) {
-            System.out.println("No se puede mover a [" + nuevaFila + "," + nuevaCol + "] - hay un enemigo");
+            System.out.println("No se puede mover a " + nuevaFila + "," + nuevaCol + " hay un enemigo");
             return false;
+        }
+
+        // Aplicar daño si la casilla es maldicion
+        String[][] matriz = this.escenario.getEscenario();
+        String tipoCasilla = matriz[nuevaFila][nuevaCol];
+        if ("T".equals(tipoCasilla)) {
+            protagonista.recibirDanio(25);
+            System.out.println("¡Has caído en una maldicion! Pierdes 25 puntos de salud.");
         }
 
         // Actualizar posición del protagonista
         protagonista.setPosicion(new int[] { nuevaFila, nuevaCol });
-
         System.out.println("Protagonista movido a: [" + nuevaFila + "," + nuevaCol + "]");
         return true;
     }
@@ -417,6 +436,7 @@ public class GestorJuego {
             } else {
                 System.out.println("Enemigo ID " + enemigo.getId() + " no puede moverse - posición inválida");
             }
+
         }
     }
 
@@ -515,8 +535,8 @@ public class GestorJuego {
         // Limpiar posiciones no-pared
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[i].length; j++) {
-                if (!matriz[i][j].equals("P")) {
-                    matriz[i][j] = "0"; // Suelo vacío
+                if (!matriz[i][j].equals("P") && !matriz[i][j].equals("T")) {
+                    matriz[i][j] = "0"; // Suelo vacío, pero no toques trampas
                 }
             }
         }
@@ -673,4 +693,5 @@ public class GestorJuego {
             return "Juego en curso";
         return isVictoria() ? "¡Victoria!" : "¡Derrota!";
     }
+
 }

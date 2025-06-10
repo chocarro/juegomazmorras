@@ -17,7 +17,12 @@ public class Escenario {
     LectorEscenario lector = new LectorEscenario();
     private final String suelo = "/mazmorras/images/suelo.png";
     private final String pared = "/mazmorras/images/pared.png";
+    private final String maldicion = "/mazmorras/images/maldicion.png";
 
+
+    public String getMaldicion() {
+    return this.maldicion;
+}
     /**
      * Constructor por defecto. Inicializa el lector y carga el escenario desde el
      * archivo por defecto.

@@ -142,61 +142,53 @@ public abstract class Personaje implements Comparable{
      * @param movimiento     Movimiento solicitado (W, A, S, D).
      * @return {@code "mover"}, {@code "atacar"} o {@code "bloqueado"} según la lógica del escenario.
      */
-    public String comprobarAccion(int[] posicionActual, String movimiento) {
-        GestorJuego gestor = Proveedor.getInstance().getGestorJuego();
-        String[][] escenario = gestor.getEscenario().getEscenario();
+ public String comprobarAccion(int[] posicionActual, String direccion) {
+    int nuevaFila = posicionActual[0];
+    int nuevaCol = posicionActual[1];
 
-        int nuevaFila = posicionActual[0];
-        int nuevaColumna = posicionActual[1];
+    switch (direccion.toUpperCase()) {
+        case "W": nuevaFila--; break;
+        case "A": nuevaCol--; break;
+        case "S": nuevaFila++; break;
+        case "D": nuevaCol++; break;
+        default: return null;
+    }
 
-        // Calcular nueva posición
-        switch (movimiento.toUpperCase()) {
-            case "W":
-                nuevaFila--;
-                break;
-            case "A":
-                nuevaColumna--;
-                break;
-            case "S":
-                nuevaFila++;
-                break;
-            case "D":
-                nuevaColumna++;
-                break;
-            default:
-                return "bloqueado";
-        }
+    String[][] mapa = Proveedor.getInstance().getGestorJuego().getEscenario().getEscenario();
 
-        // Validar límites del escenario
-        if (nuevaFila < 0 || nuevaFila >= escenario.length ||
-                nuevaColumna < 0 || nuevaColumna >= escenario[0].length) {
-            return "bloqueado";
-        }
+    if (nuevaFila < 0 || nuevaFila >= mapa.length || nuevaCol < 0 || nuevaCol >= mapa[0].length)
+        return null;
 
-        String contenidoCelda = escenario[nuevaFila][nuevaColumna];
+    String tipoCasilla = mapa[nuevaFila][nuevaCol];
 
-        // Si es protagonista
-        if (this instanceof Protagonista) {
-            if (contenidoCelda.equals("0") || contenidoCelda.equals("S")) {
-                return "mover";
-            } else if (contenidoCelda.matches("[1-9]+")) {
-                return "atacar";
-            }
-        }
-        // Si es enemigo
-        else if (this instanceof Enemigo) {
-            Protagonista prota = gestor.buscarProta();
-            int[] posProta = prota.getPosicion();
-
-            if (nuevaFila == posProta[0] && nuevaColumna == posProta[1]) {
-                return "atacar";
-            } else if (contenidoCelda.equals("0") || contenidoCelda.equals("S")) {
-                return "mover";
-            }
-        }
-
+    if (tipoCasilla.equals("P")) {
         return "bloqueado";
     }
+
+    Enemigo enemigo = Proveedor.getInstance().getGestorJuego().buscarEnemigoEnPosicion(nuevaFila, nuevaCol);
+    if (enemigo != null) {
+        return "atacar";
+    }
+
+    if (tipoCasilla.equals("0") || tipoCasilla.equals("T")) {
+        return "mover";
+    }
+
+    return "bloqueado";
+}
+
+/**
+ * Aplica una maldición al personaje, reduciendo su salud y salud máxima en 25%.
+ */
+public void aplicarMaldicion() {
+    int reduccionSalud = (int) (this.salud * 0.25);
+    int reduccionMaxima = (int) (this.saludMaxima * 0.25);
+    this.salud -= reduccionSalud;
+    this.saludMaxima -= reduccionMaxima;
+
+    if (this.salud < 0) this.salud = 0;
+    if (this.saludMaxima < 1) this.saludMaxima = 1;
+}
 
     /**
      * Compara la velocidad entre dos personajes.

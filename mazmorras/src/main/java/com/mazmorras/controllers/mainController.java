@@ -58,7 +58,7 @@ public class mainController {
   public void initialize() {
     // Configurar valores por defecto
     campoSalud.setText("100");
-    campoAtaque.setText("10");
+    campoAtaque.setText("100");
     campoDefensa.setText("5");
     campoVelocidad.setText("5");
 

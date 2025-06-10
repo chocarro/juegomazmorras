@@ -396,8 +396,15 @@ public class juegoController implements Observer {
                     img.setFitWidth(40);
                     img.setFitHeight(40);
 
-                    String ruta = escenario[i][j].equals("P") ? gestorJuego.getEscenario().getPared()
-                            : gestorJuego.getEscenario().getSuelo();
+                    String tipo = escenario[i][j];
+                    String ruta;
+                    if (tipo.equals("P")) {
+                        ruta = gestorJuego.getEscenario().getPared();
+                    } else if (tipo.equals("T")) {
+                        ruta = gestorJuego.getEscenario().getMaldicion();
+                    } else {
+                        ruta = gestorJuego.getEscenario().getSuelo();
+                    }
 
                     try {
                         InputStream is = getClass().getResourceAsStream(ruta);
